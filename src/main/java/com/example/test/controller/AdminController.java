@@ -1,14 +1,16 @@
 package com.example.test.controller;
 
+import com.example.test.dto.ResponseObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("")
+@RequestMapping
 public class AdminController {
-    @GetMapping()
-    public String getString(){
-        return "check ok";
+    @GetMapping("/")
+    public ResponseEntity<ResponseObject> homeServer(){
+        return ResponseEntity.ok().body(new ResponseObject("success", "Đây là trang chủ server", null));
     }
 }
