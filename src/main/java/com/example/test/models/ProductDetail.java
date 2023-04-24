@@ -68,7 +68,9 @@ public class ProductDetail {
     //quan hệ với order detail
     @OneToMany(mappedBy = "productDetail")
     private List<OrderDetail> orderDetail;
-
+    //stocks detail
+    @OneToMany(mappedBy = "productDetail")
+    private List<StockDetail> stockDetails;
     public ProductDetail(ProductDetailCreateDTO dto) {
         this.id = dto.getId();
         this.codeName = dto.getCodeName();

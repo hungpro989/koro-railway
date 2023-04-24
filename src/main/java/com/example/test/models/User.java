@@ -53,7 +53,9 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Order> order;
 
-
+    //stocks
+    @OneToMany(mappedBy = "user")
+    private List<Stocks> stocks;
 
     public User(UserDTO dto){
         this.id = dto.getId();
