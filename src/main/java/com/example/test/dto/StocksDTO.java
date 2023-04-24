@@ -26,7 +26,7 @@ public class StocksDTO {
     private List<StockDetailDTO> stockDetailDTO;
     public StocksDTO(Stocks s) {
         this.id=s.getId();
-        this.providerId=s.getProviders().getId();
+        this.providerId=s.getProvidersNCC().getId();
         this.userId=s.getUser().getId();
         this.note=s.getNote();
         this.totalProducts=s.getTotalProducts();
@@ -38,8 +38,8 @@ public class StocksDTO {
         this.dateCompletion=s.getDateCompletion();
         this.status=s.getStatus();
         //providers
-        Providers providers = s.getProviders();
-        this.providersDTO = new ProvidersDTO(providers);
+        ProvidersNCC providersNCC = s.getProvidersNCC();
+        this.providersDTO = new ProvidersDTO(providersNCC);
         //user
         User user = s.getUser();
         this.userOrderDTO = new UserOrderDTO(user);

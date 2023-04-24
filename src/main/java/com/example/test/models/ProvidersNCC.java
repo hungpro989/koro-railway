@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Providers {
+public class ProvidersNCC {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -22,11 +22,11 @@ public class Providers {
     private String note;
     @Column(name = "status")
     private Integer status;
-    
-    @OneToMany(mappedBy = "providers")
+
+    @OneToMany(mappedBy = "providersNCC")
     private List<Stocks> stocks;
 
-    public Providers(ProvidersDTO p) {
+    public ProvidersNCC(ProvidersDTO p) {
         this.id=p.getId();
         this.name=p.getName();
         this.note=p.getNote();

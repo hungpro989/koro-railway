@@ -36,7 +36,7 @@ public class Stocks {
     //provider
     @ManyToOne()
     @JoinColumn(name = "provider_id", nullable=false)
-    private Providers providers;
+    private ProvidersNCC providersNCC;
     //user
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable=false)

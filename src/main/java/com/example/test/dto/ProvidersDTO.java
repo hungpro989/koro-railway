@@ -1,5 +1,5 @@
 package com.example.test.dto;
-import com.example.test.models.Providers;
+import com.example.test.models.ProvidersNCC;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ public class ProvidersDTO {
     private String name;
     private String note;
     private Integer status;
-    public ProvidersDTO(Providers p) {
+    public ProvidersDTO(ProvidersNCC p) {
         this.id=p.getId();
         this.name =p.getName();
         this.note=p.getNote();
