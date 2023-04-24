@@ -9,5 +9,5 @@ public interface IProviderService {
     List<ProvidersDTO> getAll();
     ProvidersDTO getById(Integer id);
     boolean deleteById(Integer id);
-    boolean save(ProvidersNCC stockDetail);
+    boolean save(ProvidersNCC providersNCC);
 }
