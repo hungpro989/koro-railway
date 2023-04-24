@@ -5,10 +5,11 @@ import com.example.test.models.ProvidersNCC;
 import com.example.test.repository.ProviderNCCRepository;
 import com.example.test.serviceImpl.IProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class ProviderNCCService implements IProviderService {
     @Autowired
     ProviderNCCRepository providerRepository;

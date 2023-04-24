@@ -4,11 +4,13 @@ import com.example.test.dto.StockDetailDTO;
 import com.example.test.models.StockDetail;
 import com.example.test.repository.StockDetailRepository;
 import com.example.test.serviceImpl.IStockDetailService;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@Service
 public class StockDetailService implements IStockDetailService {
     @Autowired
     StockDetailRepository stockDetailRepository;
