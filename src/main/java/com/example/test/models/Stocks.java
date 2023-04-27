@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 @Entity
 @Table(name = "stocks")
@@ -29,9 +30,9 @@ public class Stocks {
     @Column(name = "fee_international_ship")
     private Float feeInternationalShip;
     @Column(name = "date_create")
-    private java.sql.Date dateCreate;
+    private Date dateCreate;
     @Column(name = "date_completion")
-    private java.sql.Date dateCompletion;
+    private Date dateCompletion;
     @Column(name = "status")
     private Integer status;
     //provider

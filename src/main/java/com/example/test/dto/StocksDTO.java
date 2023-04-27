@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 @Data
 @AllArgsConstructor
@@ -18,8 +19,8 @@ public class StocksDTO {
     private Float feeInternationalShip;
     private Integer providerId;
     private Integer userId;
-    private java.sql.Date dateCreate;
-    private java.sql.Date dateCompletion;
+    private Date dateCreate;
+    private Date dateCompletion;
     private Integer status;
     private ProvidersDTO providersDTO;
     private UserOrderDTO userOrderDTO;

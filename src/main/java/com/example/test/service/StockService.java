@@ -1,8 +1,10 @@
 package com.example.test.service;
 
+import com.example.test.dto.ProvidersDTO;
 import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
 import com.example.test.models.ProductDetail;
+import com.example.test.models.ProvidersNCC;
 import com.example.test.models.StockDetail;
 import com.example.test.models.Stocks;
 import com.example.test.repository.*;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.List;
+import static com.example.test.common.common.convertDateyyyymmdd;
 @Service
 public class StockService implements IStockService {
     @Autowired
@@ -60,20 +63,22 @@ public class StockService implements IStockService {
     @Override
     public boolean save(StockCreateDTO stockCreateDTO) {
         Stocks s = new Stocks(stockCreateDTO);
-        if(stockCreateDTO.getProviderId()!=null){
-            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
-        }
+        s.setProvidersNCC(new ProvidersNCC(stockCreateDTO.getProvidersDTO()));
+//        if(stockCreateDTO.getProviderId()!=null){
+//            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
+//        }
         if(stockCreateDTO.getUserId()!=null){
             s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
         }
-        stockRepository.save(s);
-        createStockDetail(stockCreateDTO,s);
+        s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
+        System.out.println(s.getDateCompletion());
+//        stockRepository.save(s);
+//        createStockDetail(stockCreateDTO,s);
         return  true;
     }
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){
         stockDTO.getStockDetailDTO().forEach(var -> {
             Integer idproDetail = var.getProductDetailId();
-            System.out.println(idproDetail);
             ProductDetail productDetail = productDetailRepository.findById(var.getProductDetailId()).orElse(null);
             if (productDetail != null) {
                 StockDetail stockDetail = new StockDetail(var);

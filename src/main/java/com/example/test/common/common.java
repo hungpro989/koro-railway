@@ -2,6 +2,7 @@ package com.example.test.common;
 
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -28,5 +29,9 @@ public class common {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         String date = simpleDateFormat.format(System.currentTimeMillis());
         return (inputBusiness+date+generatedRandom).toUpperCase();
+    }
+    public static java.sql.Date convertDateyyyymmdd(Date date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        return java.sql.Date.valueOf(sdf.format(date));
     }
 }

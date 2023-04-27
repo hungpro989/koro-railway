@@ -22,4 +22,5 @@ public class StockCreateDTO {
     private java.sql.Date dateCompletion;
     private Integer status;
     private List<StockDetailCreateDTO> stockDetailDTO;
+    private ProvidersDTO providersDTO;
 }
