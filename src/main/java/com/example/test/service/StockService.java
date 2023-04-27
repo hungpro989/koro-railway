@@ -67,7 +67,7 @@ public class StockService implements IStockService {
             s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
         }
         stockRepository.save(s);
-        createStockDetail(stockCreateDTO,s);
+//        createStockDetail(stockCreateDTO,s);
         return  true;
     }
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){

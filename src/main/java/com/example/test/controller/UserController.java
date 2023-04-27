@@ -23,6 +23,14 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Lấy danh sách nhân viên thất bại", null));
     }
+//    @GetMapping("/client")
+//    public ResponseEntity<ResponseObject> getAll(){
+//        List<UserDTO> listDto = userService.getAll();
+//        if(!listDto.isEmpty()){
+//            return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách nhân viên thành công", listDto));
+//        }
+//        return ResponseEntity.badRequest().body(new ResponseObject("error", "Lấy danh sách nhân viên thất bại", null));
+//    }
     @GetMapping("/{id}")
     public ResponseEntity<ResponseObject> getById(@PathVariable Integer id){
         if(userService.checkExistId(id)){
