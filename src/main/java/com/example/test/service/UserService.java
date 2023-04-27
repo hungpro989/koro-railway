@@ -1,6 +1,7 @@
 package com.example.test.service;
 
 import com.example.test.dto.UserDTO;
+import com.example.test.dto.UserOrderDTO;
 import com.example.test.models.User;
 import com.example.test.repository.UserRepository;
 import com.example.test.serviceImpl.IUserService;
@@ -26,7 +27,15 @@ public class UserService implements IUserService, UserDetailsService {
         }
         return listDto;
     }
-
+    @Override
+    public List<UserOrderDTO> getAllUser() {
+        List<UserOrderDTO> listDto = new ArrayList<>();
+        List<User> list = userRepository.findAll();
+        for(User var: list){
+            listDto.add((new UserOrderDTO(var)));
+        }
+        return listDto;
+    }
     @Override
     public UserDTO getById(Integer id) {
         if(userRepository.findById(id).isPresent()){
