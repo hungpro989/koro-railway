@@ -1,5 +1,6 @@
 package com.example.test.models;
 import com.example.test.dto.OrderDetailDTO;
+import com.example.test.dto.StockDetailCreateDTO;
 import com.example.test.dto.StockDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,6 +37,16 @@ public class StockDetail {
     @JoinColumn(name = "product_detail_id")
     private ProductDetail productDetail;
     public StockDetail(StockDetailDTO dto) {
+        this.id=dto.getId();
+        this.note=dto.getNote();
+        this.quantity=dto.getQuantity();
+        this.price=dto.getPrice();
+        this.totalMoney = dto.getTotalMoney();
+        this.linkOrder = dto.getLinkOrder();
+        this.status = dto.getStatus();
+    }
+
+    public StockDetail(StockDetailCreateDTO dto) {
         this.id=dto.getId();
         this.note=dto.getNote();
         this.quantity=dto.getQuantity();

@@ -1,5 +1,6 @@
 package com.example.test.service;
 
+import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
 import com.example.test.models.ProductDetail;
 import com.example.test.models.StockDetail;
@@ -57,24 +58,22 @@ public class StockService implements IStockService {
     }
 
     @Override
-    public boolean save(StocksDTO stocksDTO) {
-        Stocks s = new Stocks(stocksDTO);
-        if(stocksDTO.getProviderId()!=null){
-            s.setProvidersNCC(providerRepository.findById(stocksDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
+    public boolean save(StockCreateDTO stockCreateDTO) {
+        Stocks s = new Stocks(stockCreateDTO);
+        if(stockCreateDTO.getProviderId()!=null){
+            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
         }
-        if(stocksDTO.getUserId()!=null){
-            s.setUser(userRepository.findById(stocksDTO.getUserId()).orElse(null)); //người tạo
+        if(stockCreateDTO.getUserId()!=null){
+            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
         }
-        try{
-            stockRepository.save(s);
-            createStockDetail(stocksDTO, s);
-            return  true;
-        }catch (Exception e) {
-            return false;
-        }
+        stockRepository.save(s);
+        createStockDetail(stockCreateDTO,s);
+        return  true;
     }
-    public void createStockDetail(@RequestBody StocksDTO stockDTO, Stocks s){
+    public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){
         stockDTO.getStockDetailDTO().forEach(var -> {
+            Integer idproDetail = var.getProductDetailId();
+            System.out.println(idproDetail);
             ProductDetail productDetail = productDetailRepository.findById(var.getProductDetailId()).orElse(null);
             if (productDetail != null) {
                 StockDetail stockDetail = new StockDetail(var);

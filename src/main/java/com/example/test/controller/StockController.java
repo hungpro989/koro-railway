@@ -1,6 +1,7 @@
 package com.example.test.controller;
 
 import com.example.test.dto.ResponseObject;
+import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
 import com.example.test.service.ProductDetailService;
 import com.example.test.service.StockDetailService;
@@ -46,14 +47,14 @@ public class StockController {
         return ResponseEntity.ok().body(new ResponseObject("success", "Xoá stocks thất bại với id = ", id));
     }
     @PostMapping
-    public ResponseEntity<ResponseObject> create(@RequestBody StocksDTO dto){
+    public ResponseEntity<ResponseObject> create(@RequestBody StockCreateDTO dto){
         if(stockService.save(dto)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Tạo stocks thành công", dto));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Tạo stocks thất bại", null));
     }
-    @PutMapping
-    public ResponseEntity<ResponseObject> update(@RequestBody StocksDTO dto){
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseObject> update(@RequestBody StockCreateDTO dto){
         if(stockService.save(dto)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật stocks thành công", dto));
         }

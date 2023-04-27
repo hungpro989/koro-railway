@@ -1,4 +1,5 @@
 package com.example.test.models;
+import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,6 +47,19 @@ public class Stocks {
     private List<StockDetail> stockDetail;
 
     public Stocks(StocksDTO dto) {
+        this.id =dto.getId();
+        this.note =dto.getNote();
+        this.totalProducts=dto.getTotalProducts();
+        this.productMoney=dto.getProductMoney();
+        this.feeService=dto.getFeeService();
+        this.feeDomesticShip=dto.getFeeDomesticShip();
+        this.feeInternationalShip=dto.getFeeInternationalShip();
+        this.dateCreate=dto.getDateCreate();
+        this.dateCompletion=dto.getDateCompletion();
+        this.status=dto.getStatus();
+    }
+
+    public Stocks(StockCreateDTO dto) {
         this.id =dto.getId();
         this.note =dto.getNote();
         this.totalProducts=dto.getTotalProducts();
