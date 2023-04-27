@@ -23,4 +23,5 @@ public class StockCreateDTO {
     private Integer status;
     private List<StockDetailCreateDTO> stockDetailDTO;
     private ProvidersDTO providersDTO;
+    private UserOrderDTO userOrderDTO;
 }

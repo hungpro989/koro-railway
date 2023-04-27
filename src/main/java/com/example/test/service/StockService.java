@@ -3,10 +3,7 @@ package com.example.test.service;
 import com.example.test.dto.ProvidersDTO;
 import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
-import com.example.test.models.ProductDetail;
-import com.example.test.models.ProvidersNCC;
-import com.example.test.models.StockDetail;
-import com.example.test.models.Stocks;
+import com.example.test.models.*;
 import com.example.test.repository.*;
 import com.example.test.serviceImpl.IStockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,12 +61,13 @@ public class StockService implements IStockService {
     public boolean save(StockCreateDTO stockCreateDTO) {
         Stocks s = new Stocks(stockCreateDTO);
         s.setProvidersNCC(new ProvidersNCC(stockCreateDTO.getProvidersDTO()));
+        s.setUser(new User(stockCreateDTO.getUserOrderDTO()));
 //        if(stockCreateDTO.getProviderId()!=null){
 //            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
 //        }
-        if(stockCreateDTO.getUserId()!=null){
-            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
-        }
+//        if(stockCreateDTO.getUserId()!=null){
+//            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
+//        }
         s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
         System.out.println(s.getDateCompletion());
 //        stockRepository.save(s);

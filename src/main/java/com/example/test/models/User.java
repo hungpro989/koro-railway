@@ -1,6 +1,7 @@
 package com.example.test.models;
 
 import com.example.test.dto.UserDTO;
+import com.example.test.dto.UserOrderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -61,6 +62,19 @@ public class User {
         this.id = dto.getId();
         this.username = dto.getUsername();
         this.password = dto.getPassword();
+        this.fullName=dto.getFullName();
+        this.address=dto.getAddress();
+        this.phone=dto.getPhone();
+        this.email=dto.getEmail();
+        this.address=dto.getAddress();
+        this.image=dto.getImage();
+        this.description=dto.getDescription();
+        this.birthday=dto.getBirthday();
+        this.status=dto.isStatus();
+    }
+
+    public User(UserOrderDTO dto) {
+        this.id = dto.getId();
         this.fullName=dto.getFullName();
         this.address=dto.getAddress();
         this.phone=dto.getPhone();
