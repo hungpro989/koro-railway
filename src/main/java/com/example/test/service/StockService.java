@@ -68,7 +68,7 @@ public class StockService implements IStockService {
 //        if(stockCreateDTO.getUserId()!=null){
 //            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
 //        }
-        s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
+//        s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
         System.out.println(s.getDateCompletion());
 //        stockRepository.save(s);
 //        createStockDetail(stockCreateDTO,s);
