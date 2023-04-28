@@ -60,4 +60,11 @@ public class StockController {
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật stocks thất bại", null));
     }
+    @DeleteMapping("/stock-detail/{id}")
+    public ResponseEntity<ResponseObject> deleteOrderDetail(@PathVariable Integer id){
+        if(stockDetailService.deleteById(id)){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Xoá stock detail thành công", null));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Xoá stock detail thất bại", null));
+    }
 }

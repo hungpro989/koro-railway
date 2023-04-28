@@ -62,20 +62,12 @@ public class StockService implements IStockService {
         Stocks s = new Stocks(stockCreateDTO);
         s.setProvidersNCC(new ProvidersNCC(stockCreateDTO.getProvidersDTO()));
         s.setUser(new User(stockCreateDTO.getUserOrderDTO()));
-//        if(stockCreateDTO.getProviderId()!=null){
-//            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null)); //trạng thái đơn hàng
-//        }
-//        if(stockCreateDTO.getUserId()!=null){
-//            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null)); //người tạo
-//        }
-//        s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
         stockRepository.save(s);
         createStockDetail(stockCreateDTO,s);
         return  true;
     }
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){
         stockDTO.getStockDetailDTO().forEach(var -> {
-            Integer idproDetail = var.getProductDetailId();
             ProductDetail productDetail = productDetailRepository.findById(var.getProductDetailId()).orElse(null);
             if (productDetail != null) {
                 StockDetail stockDetail = new StockDetail(var);
