@@ -70,8 +70,8 @@ public class StockService implements IStockService {
 //        }
 //        s.setDateCompletion(convertDateyyyymmdd(stockCreateDTO.getDateCompletion()));
         System.out.println(s.getDateCompletion());
-//        stockRepository.save(s);
-//        createStockDetail(stockCreateDTO,s);
+        stockRepository.save(s);
+        createStockDetail(stockCreateDTO,s);
         return  true;
     }
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){
