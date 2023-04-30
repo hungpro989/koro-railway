@@ -38,12 +38,8 @@ public class StockDetailService implements IStockDetailService {
 
     @Override
     public boolean deleteById(Integer id) {
-        try{
-            stockDetailRepository.deleteById(id);
-            return true;
-        }catch (Exception e) {
-            return false;
-        }
+        stockDetailRepository.deleteById(id);
+        return true;
     }
 
     @Override

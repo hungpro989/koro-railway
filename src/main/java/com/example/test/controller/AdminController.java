@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping("/admin")
 public class AdminController {
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<ResponseObject> homeServer(){
         return ResponseEntity.ok().body(new ResponseObject("success", "Đây là trang chủ server", null));
     }
