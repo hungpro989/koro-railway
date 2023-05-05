@@ -7,6 +7,7 @@ import com.example.test.models.*;
 import com.example.test.repository.*;
 import com.example.test.serviceImpl.IStockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -28,7 +29,7 @@ public class StockService implements IStockService {
     @Override
     public List<StocksDTO> getAll() {
         List<StocksDTO> listDto = new ArrayList<>();
-        List<Stocks> list = stockRepository.findAll();
+        List<Stocks> list = stockRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
         for(Stocks var: list){
             listDto.add((new StocksDTO(var)));
         }
@@ -60,8 +61,16 @@ public class StockService implements IStockService {
     @Override
     public boolean save(StockCreateDTO stockCreateDTO) {
         Stocks s = new Stocks(stockCreateDTO);
-        s.setProvidersNCC(new ProvidersNCC(stockCreateDTO.getProvidersDTO()));
-        s.setUser(new User(stockCreateDTO.getUserOrderDTO()));
+        if(stockCreateDTO.getProviderId() !=null){
+            s.setProvidersNCC(providerRepository.findById(stockCreateDTO.getProviderId()).orElse(null));
+        }else{
+            s.setProvidersNCC(new ProvidersNCC(stockCreateDTO.getProvidersDTO()));
+        }
+        if(stockCreateDTO.getUserId()!=null){
+            s.setUser(userRepository.findById(stockCreateDTO.getUserId()).orElse(null));
+        }else{
+            s.setUser(new User(stockCreateDTO.getUserOrderDTO()));
+        }
         stockRepository.save(s);
         createStockDetail(stockCreateDTO,s);
         return  true;

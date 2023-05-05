@@ -2,7 +2,9 @@ package com.example.test.service;
 
 import com.example.test.dto.BusinessDTO;
 import com.example.test.models.Business;
+import com.example.test.models.ProvidersNCC;
 import com.example.test.repository.BusinessRepository;
+import com.example.test.repository.SourceRepository;
 import com.example.test.serviceImpl.IBusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,9 @@ import java.util.List;
 public class BusinessService implements IBusinessService {
     @Autowired
     BusinessRepository businessRepository;
+    @Autowired
+    private SourceRepository sourceRepository;
+
     @Override
     public List<BusinessDTO> getAllBusiness() {
         List<BusinessDTO> listDto = new ArrayList<>();
@@ -46,14 +51,13 @@ public class BusinessService implements IBusinessService {
     }
 
     @Override
-    public boolean save(Business business) {
-        try{
-            businessRepository.save(business);
-            return true;
-        }catch (Exception e) {
-            return false;
+    public boolean save(BusinessDTO dto) {
+        Business business = new Business(dto);
+        if(dto.getSourceDTO() !=null){
+            business.setSource(sourceRepository.findById(dto.getSourceDTO().getId()).orElse(null));
         }
-
+        businessRepository.save(business);
+        return true;
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, Integer> {
     List<Order> findOrderByBusinessIdOrderByOrderTimeDesc(Integer id);
     List<Order> findOrderByOrderStatusId(Integer id);
+    List<Order> findOrderByCustomerId(Integer id);
 
 //    @Query("select e from Order e where (:employeeId is null or e.employee = :employeeId) and (:creatorId is null or e.employee1 = :creatorId) and (:businessId is null or e.business = :businessId) and (:deliveryId is null or e.delivery = :deliveryId) and (:orderStatusId is null or e.orderStatus = :orderStatusId) and (:orderTypeId is null or e.orderType = :orderTypeId)")
 //    List<Order> filterOrderByCondition(Employee employeeId, Optional<Employee> creatorId, Optional<Business> businessId, Optional<Delivery> deliveryId, Optional<OrderStatus> orderStatusId, Optional<OrderType> orderTypeId);

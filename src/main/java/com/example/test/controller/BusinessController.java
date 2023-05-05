@@ -45,7 +45,7 @@ public class BusinessController {
         Business b = new Business(business);
         if(!businessService.checkExistName(business.getCodeName())){
             try{
-                businessService.save(b);
+                businessService.save(business);
                 return ResponseEntity.ok().body(new ResponseObject("success", "Tạo business mới thành công", business));
             }catch (Exception e) {
                 return ResponseEntity.badRequest().body(new ResponseObject("error", "Tạo business thất bại1", null));
@@ -55,23 +55,10 @@ public class BusinessController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> update(@RequestBody Business business, @PathVariable Integer id){
-        BusinessDTO dto = businessService.getBusinessById(id);
-        if(dto != null){
-            if(!businessService.checkExistName(business.getCodeName())) {
-                if (businessService.save(business)) {
-                    return ResponseEntity.ok().body(new ResponseObject("success", "Cap nhat business thanh cong", business));
-                }
-                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cap nhat business that bai", null));
-            }else if(business.getCodeName().equalsIgnoreCase(dto.getCodeName())) {
-                if (businessService.save(business)) {
-                    return ResponseEntity.ok().body(new ResponseObject("success", "Cap nhat business thanh cong", business));
-                }
-                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cap nhat business that bai", null));
-            }else {
-                return ResponseEntity.badRequest().body(new ResponseObject("error", "Mã business đã tồn tại", null));
-            }
+    public ResponseEntity<ResponseObject> update(@RequestBody BusinessDTO dto, @PathVariable Integer id){
+        if (businessService.save(dto)) {
+            return ResponseEntity.ok().body(new ResponseObject("success", "Cap nhat business thanh cong", dto));
         }
-        return ResponseEntity.badRequest().body(new ResponseObject("error", "Business không tồn tại", null));
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Cap nhat business that bai", null));
     }
 }

@@ -48,6 +48,7 @@ public class StockController {
     }
     @PostMapping
     public ResponseEntity<ResponseObject> create(@RequestBody StockCreateDTO dto){
+        System.out.println(dto) ;
         if(stockService.save(dto)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Tạo stocks thành công", dto));
         }

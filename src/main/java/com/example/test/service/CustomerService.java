@@ -1,5 +1,6 @@
 package com.example.test.service;
 
+import com.example.test.dto.CustomerCreateDTO;
 import com.example.test.dto.CustomerViewDTO;
 import com.example.test.models.Customer;
 import com.example.test.repository.CustomerRepository;
@@ -43,9 +44,10 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public boolean save(Customer entity) {
+    public boolean save(CustomerCreateDTO dto) {
         try{
-            customerRepository.save(entity);
+            Customer customer = new Customer(dto);
+            customerRepository.save(customer);
             return  true;
         }catch (Exception e) {
             return false;
@@ -58,9 +60,9 @@ public class CustomerService implements ICustomerService {
     }
 
     @Override
-    public CustomerViewDTO checkExistPhone(String phone) {
+    public CustomerCreateDTO checkExistPhone(String phone) {
         Customer customer =  customerRepository.findCustomerByPhone(phone);
-        CustomerViewDTO dto = new CustomerViewDTO(customer);
+        CustomerCreateDTO dto = new CustomerCreateDTO(customer);
         return dto;
     }
 
@@ -72,4 +74,16 @@ public class CustomerService implements ICustomerService {
     public boolean checkExistUsername(String username) {
         return customerRepository.findCustomerByUsername(username) !=null;
     }
+
+    @Override
+    public List<CustomerViewDTO> getAllCustomersByPhone(String phone) {
+        List<CustomerViewDTO> listDto = new ArrayList<>();
+        List<Customer> list = customerRepository.findCustomersByPhone(phone);
+        for(Customer var: list){
+            listDto.add((new CustomerViewDTO(var)));
+        }
+        return listDto;
+    }
+
+
 }

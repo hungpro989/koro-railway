@@ -34,7 +34,7 @@ public class Stocks {
     @Column(name = "date_completion")
     private Date dateCompletion;
     @Column(name = "status")
-    private Integer status;
+    private Boolean status;
     //provider
     @ManyToOne()
     @JoinColumn(name = "provider_id", nullable=false)

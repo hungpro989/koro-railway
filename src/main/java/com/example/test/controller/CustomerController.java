@@ -2,21 +2,24 @@ package com.example.test.controller;
 
 import com.example.test.dto.CustomerCreateDTO;
 import com.example.test.dto.CustomerViewDTO;
+import com.example.test.dto.OrderDTO;
 import com.example.test.dto.ResponseObject;
 import com.example.test.models.Customer;
 import com.example.test.service.CustomerService;
+import com.example.test.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@RequestMapping("/api/v1/customer")
+@RequestMapping("/api/v1/customers")
 @CrossOrigin
 public class CustomerController {
     @Autowired
     CustomerService customerService;
-
+    @Autowired
+    OrderService orderService;
     @GetMapping
     public ResponseEntity<ResponseObject> getAll(){
         List<CustomerViewDTO> listDto = customerService.getAll();
@@ -39,7 +42,7 @@ public class CustomerController {
         Customer c = new Customer(dto);
         if(!customerService.checkExistEmail(dto.getEmail()) && customerService.checkExistPhone(dto.getPhone())!=null){
             if(!customerService.checkExistUsername(dto.getUsername())){
-                if(customerService.save(c)){
+                if(customerService.save(dto)){
                     return ResponseEntity.ok().body(new ResponseObject("success", "Thêm khách hàng mới thành công", c));
                 }
                     return ResponseEntity.badRequest().body(new ResponseObject("error", "Username đã tồn tại", null));
@@ -51,7 +54,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> update(@RequestBody Customer customer, @PathVariable Integer id){
+    public ResponseEntity<ResponseObject> update(@RequestBody CustomerCreateDTO customer, @PathVariable Integer id){
         CustomerViewDTO dto = customerService.getById(id);
         if(dto != null){
             //kiểm tra allEmployee nhưng phone, email là ko trùng ==> cập nhật luôn
@@ -88,10 +91,26 @@ public class CustomerController {
     }
     @GetMapping("/find-customer-by-phone/{phone}")
     public ResponseEntity<ResponseObject> findCustomerByPhone(@PathVariable String phone){
-        CustomerViewDTO dto = customerService.checkExistPhone(phone);
+        CustomerCreateDTO dto = customerService.checkExistPhone(phone);
         if (dto!=null){
             return ResponseEntity.ok().body(new ResponseObject("success", "Kiểm tra thông tin KH bằng SĐT thành công", dto));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy KH có sdt như trên", null));
+    }
+    @GetMapping("/order-by-customer/{id}")
+    public ResponseEntity<ResponseObject> getAllByCustomer(@PathVariable Integer id){
+        List<OrderDTO> listDto = orderService.getAllByCustomer(id);
+        if(!listDto.isEmpty()){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng của khách hàng thành công", listDto));
+        }
+        return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng của khách thất bại", null));
+    }
+    @GetMapping("/search-customer-by-phone/{phone}")
+    public ResponseEntity<ResponseObject> getAllCustomersByPhone(@PathVariable String phone){
+        List<CustomerViewDTO> listDto = customerService.getAllCustomersByPhone(phone);
+        if(!listDto.isEmpty()){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Tìm khách hàng bằng sdt "+phone+" thành công", listDto));
+        }
+        return ResponseEntity.ok().body(new ResponseObject("success", "Tìm khách hàng bằng sdt "+phone+" thất bại", null));
     }
 }

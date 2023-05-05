@@ -9,7 +9,9 @@ public interface IBusinessService {
     List<BusinessDTO> getAllBusiness();
     BusinessDTO getBusinessById(Integer id);
     boolean deleteById(Integer id);
-    boolean save(Business category);
+
+    boolean save(BusinessDTO dto);
+
     boolean checkExistName(String name);
     boolean checkExistId(Integer id);
 }

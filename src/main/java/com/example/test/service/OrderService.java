@@ -54,6 +54,16 @@ public class OrderService implements IOrderService {
         return listDto;
     }
 
+    @Override
+    public List<OrderDTO> getAllByCustomer(Integer customerId) {
+        List<OrderDTO> listDto = new ArrayList<>();
+        List<Order> list = orderRepository.findOrderByCustomerId(customerId);
+        for (Order var : list) {
+            listDto.add((new OrderDTO(var)));
+        }
+        return listDto;
+    }
+
     //    @Override
 //    public List<OrderDTO> getAllByCondition(Integer employeeId, Integer creatorId, Integer businessId, Integer deliveryId, Integer orderStatusId, Integer orderTypeId) {
 //        List<OrderDTO> listDto = new ArrayList<>();
@@ -120,6 +130,11 @@ public class OrderService implements IOrderService {
             customer.setFullName(orderDTO.getName());
             customer.setPhone(orderDTO.getPhone());
             customer.setAddress(orderDTO.getAddress());
+            customer.setWard(orderDTO.getWard());
+            customer.setDistrict(orderDTO.getDistrict());
+            customer.setProvince(orderDTO.getProvince());
+            customer.setImage("/file/images/shopping.png");
+            customer.setStatus(true);
             customerRepository.save(customer);
         } else {
             customer = customerRepository.findCustomerByPhone(orderDTO.getPhone());

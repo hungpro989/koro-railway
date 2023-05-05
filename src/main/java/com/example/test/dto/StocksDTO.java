@@ -21,7 +21,7 @@ public class StocksDTO {
     private Integer userId;
     private Date dateCreate;
     private Date dateCompletion;
-    private Integer status;
+    private Boolean status;
     private ProvidersDTO providersDTO;
     private UserOrderDTO userOrderDTO;
     private List<StockDetailDTO> stockDetailDTO;

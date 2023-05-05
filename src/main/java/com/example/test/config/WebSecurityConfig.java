@@ -59,5 +59,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
-
 }

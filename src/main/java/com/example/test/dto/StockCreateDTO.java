@@ -20,7 +20,7 @@ public class StockCreateDTO {
     private Integer userId;
     private java.sql.Date dateCreate;
     private java.sql.Date dateCompletion;
-    private Integer status;
+    private Boolean status;
     private List<StockDetailCreateDTO> stockDetailDTO;
     private ProvidersDTO providersDTO;
     private UserOrderDTO userOrderDTO;
