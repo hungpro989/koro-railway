@@ -10,4 +10,5 @@ public interface IStockService {
     StocksDTO getById(Integer id);
     boolean deleteById(Integer id);
     boolean save(StockCreateDTO stocksDTO);
+    boolean changeQuantityStockComplete(StockCreateDTO stocksDTO);
 }

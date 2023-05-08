@@ -38,7 +38,8 @@ public class OrderService implements IOrderService {
     OrderDetailService orderDetailService;
     @Autowired
     private ProductDetailRepository productDetailRepository;
-
+    @Autowired
+    private ProductService productService;
     @Autowired
     CustomerRepository customerRepository;
     @Autowired
@@ -89,7 +90,6 @@ public class OrderService implements IOrderService {
         }
         return listDto;
     }
-
     @Override
     public List<OrderDTO> getAllByBusinessId(Integer id) {
         List<OrderDTO> listDto = new ArrayList<>();
@@ -99,7 +99,6 @@ public class OrderService implements IOrderService {
         }
         return listDto;
     }
-
     @Override
     public OrderDTO getById(Integer id) {
         OrderDTO dto = new OrderDTO();
@@ -110,7 +109,6 @@ public class OrderService implements IOrderService {
         }
         return null;
     }
-
     @Override
     public boolean deleteById(Integer id) {
         try {
@@ -120,7 +118,6 @@ public class OrderService implements IOrderService {
             return false;
         }
     }
-
     @Override
     public boolean save(OrderCreateDTO orderDTO) {
         //nhận dữ liệu từ DTO và ép vào object Order
@@ -178,6 +175,7 @@ public class OrderService implements IOrderService {
     public void createProductDetail(@RequestBody OrderCreateDTO orderDTO, Order o){
         orderDTO.getOrderDetailDTO().forEach(var -> {
             ProductDetail productDetail = productDetailRepository.findById(var.getProDeId()).orElse(null);
+            productService.handleWhenCreateOrder(var.getProDeId(),productDetail);
             if (productDetail != null) {
                 OrderDetail orderDetail = new OrderDetail(var);
                 orderDetail.setOrders(o);
@@ -273,4 +271,36 @@ public class OrderService implements IOrderService {
         }
         return listDto;
     }
+
+    @Override
+    public boolean updateOrderStatusAndReFundProductDetail(Integer id) {
+        Order o = orderRepository.findById(id).orElse(null);
+
+        o.getOrderDetail().forEach(var->{
+            ProductDetail pd = new ProductDetail(var.getProductDetail());
+            productService.handleWhenReFundOrder(var.getQuantity(), pd);
+        });
+        if (o != null) {
+            o.setOrderStatus(orderStatusRepository.findById(8).orElse(null));
+            orderRepository.save(o);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean scanTrackingOrderAndChangeQuantityHold(String billCode) {
+        try{
+            OrderDTO dto = getOrderByBillCode(billCode);
+            dto.getOrderDetail().forEach(var->{
+                ProductDetail pd = productDetailRepository.findById(var.getProDeId()).orElse(null);
+                productService.handleWhenPrintBillOrder(var.getQuantity(), pd);
+            });
+            updateStatus(dto.getId(), 4);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
+    }
+
 }

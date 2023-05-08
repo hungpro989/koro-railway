@@ -4,6 +4,7 @@ import com.example.test.dto.ResponseObject;
 import com.example.test.dto.StockCreateDTO;
 import com.example.test.dto.StocksDTO;
 import com.example.test.service.ProductDetailService;
+import com.example.test.service.ProductService;
 import com.example.test.service.StockDetailService;
 import com.example.test.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class StockController {
     StockDetailService stockDetailService;
     @Autowired
     ProductDetailService productDetailService;
+    @Autowired
+    ProductService productService;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getList(){
@@ -60,6 +63,13 @@ public class StockController {
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật stocks thành công", dto));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật stocks thất bại", null));
+    }
+    @PostMapping("/change-quantity-stock-complete")
+    public ResponseEntity<ResponseObject> changeQuantityStockComplete(@RequestBody StockCreateDTO dto){
+        if(stockService.changeQuantityStockComplete(dto)){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật số lượng trong sản phẩm thành công", null));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật số lượng trong sản phẩm thất bại", null));
     }
     @DeleteMapping("/stock-detail/{id}")
     public ResponseEntity<ResponseObject> deleteOrderDetail(@PathVariable Integer id){

@@ -4,6 +4,7 @@ import com.example.test.dto.*;
 import com.example.test.service.OrderDeliveryService;
 import com.example.test.service.OrderDetailService;
 import com.example.test.service.OrderService;
+import com.example.test.service.ProductService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -30,6 +31,8 @@ public class OrderController {
     OrderDetailService orderDetailService;
     @Autowired
     OrderDeliveryService orderDeliveryService;
+    @Autowired
+    ProductService productService;
     //get all
     @GetMapping
     public ResponseEntity<ResponseObject> getAll(){
@@ -37,7 +40,7 @@ public class OrderController {
         if(!listDto.isEmpty()){
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thành công", listDto));
         }
-        return ResponseEntity.badRequest().body(new ResponseObject("error", "Lấy danh sách đơn hàng thất bại", listDto));
+        return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thất bại, rỗng", listDto));
     }
 //get by business
     @GetMapping("/business/{id}")
@@ -103,13 +106,19 @@ public class OrderController {
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật đơn hàng thất bại", orderDTO));
     }
-    @PutMapping("/{id}/{statusId}")
+    @GetMapping("/{id}/{statusId}")
     public ResponseEntity<ResponseObject> updateOrderStatus(@PathVariable Integer id, @PathVariable Integer statusId){
-
         if(orderService.updateStatus(id, statusId)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật trạng thái đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật trạng thái đơn hàng thất bại", null));
+    }
+    @GetMapping("/refund-order/{id}")
+    public ResponseEntity<ResponseObject> updateOrderStatusAndReFundProductDetail(@PathVariable Integer id){
+        if(orderService.updateOrderStatusAndReFundProductDetail(id)){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Hoàn đơn hàng thành công", null));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Hoàn đơn hàng thất bại", null));
     }
     @GetMapping("/status/{statusId}")
     public ResponseEntity<ResponseObject> getAll(@PathVariable Integer statusId){
@@ -117,7 +126,7 @@ public class OrderController {
         if(!listDto.isEmpty()){
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thành công", listDto));
         }
-        return ResponseEntity.badRequest().body(new ResponseObject("error", "Lấy danh sách đơn hàng thất bại", listDto));
+        return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thất bại, rỗng", listDto));
     }
     @PostMapping("/printbill/{id}/{deliveryId}")
     public ResponseEntity<ResponseObject> printBill(@PathVariable Integer id, @PathVariable Integer deliveryId){
@@ -235,5 +244,12 @@ public class OrderController {
         }
         workbook.write(response.getOutputStream());
         workbook.close();
+    }
+    @GetMapping("/scan-tracking-order-print-bill/{billCode}")
+    public ResponseEntity<ResponseObject> scanTrackingOrderPrintBill(@PathVariable String billCode){
+        if(orderService.scanTrackingOrderAndChangeQuantityHold(billCode)){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Tracking và đổi trạng thái đơn hàng thành công", null));
+        }
+        return ResponseEntity.ok().body(new ResponseObject("success", "Tracking và đổi trạng thái đơn hàng thất bại", null));
     }
 }

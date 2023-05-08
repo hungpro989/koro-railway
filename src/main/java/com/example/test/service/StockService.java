@@ -26,6 +26,8 @@ public class StockService implements IStockService {
     private StockDetailRepository stockDetailRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProductService productService;
     @Override
     public List<StocksDTO> getAll() {
         List<StocksDTO> listDto = new ArrayList<>();
@@ -51,6 +53,11 @@ public class StockService implements IStockService {
     @Override
     public boolean deleteById(Integer id) {
         try{
+            StocksDTO dto = getById(id);
+            dto.getStockDetailDTO().forEach(var->{
+                ProductDetail pd = productDetailRepository.findById(var.getProductDetailDTO().getId()).orElse(null);
+                productService.handleWhenCancelCreateStock(var.getQuantity(), pd);
+            });
             stockRepository.deleteById(id);
             return true;
         }catch (Exception e) {
@@ -75,6 +82,21 @@ public class StockService implements IStockService {
         createStockDetail(stockCreateDTO,s);
         return  true;
     }
+
+    @Override
+    public boolean changeQuantityStockComplete(StockCreateDTO dto) {
+            try {
+                dto.getStockDetailDTO().forEach(var ->{
+                    ProductDetail pd = productDetailRepository.findById(var.getProductDetailDTO().getId()).orElse(null);
+                    productService.handleWhenCreateStock(var.getQuantity(), pd);
+                });
+                return true;
+            }catch (Exception e) {
+                return false;
+            }
+
+    }
+
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){
         stockDTO.getStockDetailDTO().forEach(var -> {
             ProductDetail productDetail = productDetailRepository.findById(var.getProductDetailId()).orElse(null);
@@ -86,4 +108,6 @@ public class StockService implements IStockService {
             }
         });
     }
+
+
 }

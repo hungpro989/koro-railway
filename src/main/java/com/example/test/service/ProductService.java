@@ -2,11 +2,13 @@ package com.example.test.service;
 
 import com.example.test.dto.ProductCreateDTO;
 import com.example.test.dto.ProductDTOAdmin;
+import com.example.test.dto.ProductDetailCreateDTO;
 import com.example.test.models.Category;
 import com.example.test.models.CategoryProduct;
 import com.example.test.models.Product;
 import com.example.test.models.ProductDetail;
 import com.example.test.repository.CategoryRepository;
+import com.example.test.repository.ProductDetailRepository;
 import com.example.test.repository.ProductRepository;
 import com.example.test.serviceImpl.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,9 @@ public class ProductService implements IProductService {
     CategoryRepository categoryRepository;
     @Autowired
     ProductDetailService productDetailService;
+    @Autowired
+    private ProductDetailRepository productDetailRepository;
+
     @Override
     public List<ProductDTOAdmin> getAllProduct() {
         List<ProductDTOAdmin> listDto = new ArrayList<>();
@@ -129,6 +134,89 @@ public class ProductService implements IProductService {
         return "false";
     }
 
+    //giảm valid
+    @Override
+    public void scaleDownQuantityValid(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setValidQuantity(pd.getValidQuantity()-quantity);
+        productDetailRepository.save(pd);
+    }
+    //tăng valid
+    @Override
+    public void scaleUpQuantityValid(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setValidQuantity(pd.getValidQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    //tăng hold
+    @Override
+    public void scaleUpQuantityHold(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setHoldQuantity(pd.getHoldQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    //giảm hold
+    @Override
+    public void scaleDownQuantityHold(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setHoldQuantity(pd.getHoldQuantity()-quantity);
+        productDetailRepository.save(pd);
+    }
+    //tăng total_quantity
+    @Override
+    public void scaleUpTotalQuantity(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setTotalQuantity(pd.getTotalQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    // giảm total_quantity
+    @Override
+    public void scaleDownTotalQuantity(Integer quantity, ProductDetailCreateDTO dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setTotalQuantity(pd.getTotalQuantity()-quantity);
+        productDetailRepository.save(pd);
+    }
+    // xử lý số lượng khi: tạo đơn
+    @Override
+    public void handleWhenCreateOrder(Integer quantity, ProductDetail pdInput) {
+        ProductDetail pd = pdInput;
+        pd.setValidQuantity(pd.getValidQuantity()-quantity);
+        pd.setHoldQuantity(pd.getHoldQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    // xử lý số lượng khi: in đơn
+    @Override
+    public void handleWhenPrintBillOrder(Integer quantity, ProductDetail pd) {
+//        ProductDetail pd = new ProductDetail(dto);
+        pd.setHoldQuantity(pd.getHoldQuantity()-quantity);
+        productDetailRepository.save(pd);
+    }
+    // xử lý số lượng khi: hoàn đơn
+    @Override
+    public void handleWhenReFundOrder(Integer quantity, ProductDetail dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setValidQuantity(pd.getValidQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    // xử lý số lượng khi: thêm stock ở trạng thái đã hoàn thành
+    @Override
+    public void handleWhenCreateStock(Integer quantity, ProductDetail dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        pd.setTotalQuantity(pd.getTotalQuantity()+quantity);
+        pd.setValidQuantity(pd.getValidQuantity()+quantity);
+        productDetailRepository.save(pd);
+    }
+    // xử lý số lượng khi: huỷ stock ở trạng thái hoàn thành
+    @Override
+    public void handleWhenCancelCreateStock(Integer quantity, ProductDetail dto) {
+        ProductDetail pd = new ProductDetail(dto);
+        if(pd.getTotalQuantity()>quantity) {
+            pd.setTotalQuantity(pd.getTotalQuantity() - quantity);
+            pd.setValidQuantity(pd.getValidQuantity() - quantity);
+            productDetailRepository.save(pd);
+        }
+    }
+
     private String createProduct(ProductCreateDTO productCreateDTO, Integer id, Product p) {
         System.out.println(productCreateDTO.getCategoryProduct());
         if(!categoryProductService.findCategoryProductByProductId(id).isEmpty()){
@@ -169,4 +257,11 @@ public class ProductService implements IProductService {
             );
         }
     }
+    //tạo đơn: giảm quantity_valid, tăng quantity_hold
+
+    //in đơn: giảm quantity_hold
+
+    //hoàn đơn, huỷ đơn: tăng quantity_valid
+
+    //nhập stock: tăng quantity_valid, tăng total_quantity
 }
