@@ -31,6 +31,10 @@ public class OrderCreateDTO {
     private String name;
     private String phone;
     private String address;
+    private String email;
+    private Float height;
+    private Float weight;
+    private Date birthday;
     private Date orderTime;
     private String province;
     private String district;

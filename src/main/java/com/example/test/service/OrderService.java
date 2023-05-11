@@ -132,9 +132,24 @@ public class OrderService implements IOrderService {
             customer.setProvince(orderDTO.getProvince());
             customer.setImage("/file/images/shopping.png");
             customer.setStatus(true);
+            customer.setEmail(orderDTO.getEmail());
+            customer.setHeight(orderDTO.getHeight());
+            customer.setWeight(orderDTO.getWeight());
+            customer.setBirthday(orderDTO.getBirthday());
             customerRepository.save(customer);
         } else {
             customer = customerRepository.findCustomerByPhone(orderDTO.getPhone());
+            customer.setFullName(orderDTO.getName()!=null?orderDTO.getName():customer.getFullName());
+            customer.setPhone(orderDTO.getPhone()!=null?orderDTO.getPhone():customer.getPhone());
+            customer.setAddress(orderDTO.getAddress()!=null?orderDTO.getAddress():customer.getAddress());
+            customer.setWard(orderDTO.getWard()!=null?orderDTO.getWard():customer.getWard());
+            customer.setDistrict(orderDTO.getDistrict()!=null?orderDTO.getDistrict():customer.getDistrict());
+            customer.setProvince(orderDTO.getProvince()!=null?orderDTO.getProvince():customer.getProvince());
+            customer.setEmail(orderDTO.getEmail()!=null?orderDTO.getEmail():customer.getEmail());
+            customer.setHeight(orderDTO.getHeight()!=null?orderDTO.getHeight():customer.getHeight());
+            customer.setWeight(orderDTO.getWeight()!=null?orderDTO.getWeight():customer.getWeight());
+            customer.setBirthday(orderDTO.getBirthday()!=null?orderDTO.getBirthday():customer.getBirthday());
+            customerRepository.save(customer);
         }
         //liên kết các bảng 1-n
         if(orderDTO.getStatusId()!=null){
