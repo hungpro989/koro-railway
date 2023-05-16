@@ -1,8 +1,11 @@
 package com.example.test.service;
 
+import com.example.test.dto.ThemeViewDTO;
 import com.example.test.dto.UserDTO;
 import com.example.test.dto.UserOrderDTO;
+import com.example.test.models.Theme;
 import com.example.test.models.User;
+import com.example.test.repository.ThemeRepository;
 import com.example.test.repository.UserRepository;
 import com.example.test.serviceImpl.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +21,9 @@ import java.util.List;
 public class UserService implements IUserService, UserDetailsService {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private ThemeRepository themeRepository;
+
     @Override
     public List<UserDTO> getAll() {
         List<UserDTO> listDto = new ArrayList<>();
@@ -108,5 +114,14 @@ public class UserService implements IUserService, UserDetailsService {
         );
 
         return new CustomUserDetails(user);
+    }
+    public boolean changeTheme(Integer userId,Integer themeId){
+        User u = userRepository.findById(userId).orElse(null);
+        Theme theme = themeRepository.findById(themeId).orElse(null);
+        u.setThemes(theme);
+        if(save(u)){
+            return true;
+        }
+        return false;
     }
 }

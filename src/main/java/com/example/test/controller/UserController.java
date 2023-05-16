@@ -5,6 +5,8 @@ import com.example.test.models.User;
 import com.example.test.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -82,6 +84,14 @@ public class UserController {
             }
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy nhân viên nào với ID này", null));
+    }
+    @GetMapping("/change-theme/{userId}/{themeId}")
+    public ResponseEntity<ResponseObject> changeTheme(@PathVariable Integer userId, @PathVariable Integer themeId) {
+
+        if(userService.changeTheme(userId, themeId)){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Thay đổi theme thành công",null ));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Thay đổi theme thất bại", null));
     }
 
 }

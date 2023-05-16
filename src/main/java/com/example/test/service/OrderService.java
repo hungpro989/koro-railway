@@ -6,12 +6,20 @@ import com.example.test.dto.OrderPrintMultipleDTO;
 import com.example.test.models.*;
 import com.example.test.repository.*;
 import com.example.test.serviceImpl.IOrderService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.jayway.jsonpath.DocumentContext;
+import com.jayway.jsonpath.JsonPath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -132,6 +140,7 @@ public class OrderService implements IOrderService {
             customer.setProvince(orderDTO.getProvince());
             customer.setImage("/file/images/shopping.png");
             customer.setStatus(true);
+            customer.setSex(true);
             customer.setEmail(orderDTO.getEmail());
             customer.setHeight(orderDTO.getHeight());
             customer.setWeight(orderDTO.getWeight());
@@ -276,7 +285,6 @@ public class OrderService implements IOrderService {
         }
         return null;
     }
-
     @Override
     public List<OrderDTO> findOrderByPhoneOrBillCode(String phone, String billCode ) {
         List<OrderDTO> listDto = new ArrayList<>();
@@ -286,7 +294,6 @@ public class OrderService implements IOrderService {
         }
         return listDto;
     }
-
     @Override
     public boolean updateOrderStatusAndReFundProductDetail(Integer id) {
         Order o = orderRepository.findById(id).orElse(null);
@@ -302,7 +309,6 @@ public class OrderService implements IOrderService {
         }
         return false;
     }
-
     @Override
     public boolean scanTrackingOrderAndChangeQuantityHold(String billCode) {
         try{
@@ -318,4 +324,34 @@ public class OrderService implements IOrderService {
         }
     }
 
+    public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
+        DocumentContext jsonContext = JsonPath.parse(orderPosCake);
+        Integer shipping_fee = jsonContext.read("$.shipping_fee");
+        Integer productMoney = jsonContext.read("$.total_price");
+        Integer paid = jsonContext.read("$.transfer_money");
+        Integer discount = jsonContext.read("$.total_discount");
+        Integer totalMoney = productMoney+shipping_fee-discount;
+        Integer totalAmount = jsonContext.read("$.cod");
+        Integer billCode = jsonContext.read("$.id");
+
+        Order o = new Order();
+        o.setName(jsonContext.read("$.shipping_address.full_name"));
+        o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
+        o.setAddress(jsonContext.read("$.shipping_address.full_address"));
+        o.setBillCode(String.valueOf(billCode));
+        o.setDiscount(Double.valueOf(discount));
+        o.setProductMoney(Double.valueOf(productMoney));
+        o.setPaid(Double.valueOf(paid));
+        o.setShippingPrice(Double.valueOf(shipping_fee));
+        o.setTotalMoney(Double.valueOf(totalMoney));
+        o.setPaymentAmount(Double.valueOf(totalAmount));
+        o.setInternalNotes(jsonContext.read("$.note"));
+        o.setShippingNotes(jsonContext.read("$.note_print"));
+        o.setProvince(jsonContext.read("$.shipping_address.province_id"));
+        o.setDistrict(jsonContext.read("$.shipping_address.district_id"));
+        o.setWard(jsonContext.read("$.shipping_address.commune_id"));
+        o.setValue(orderPosCake);
+        System.out.println(o);
+        orderRepository.save(o);
+    }
 }

@@ -22,7 +22,7 @@ public class UserDTO {
     private String description;
     private Date birthday;
     private boolean status;
-
+    private Integer themeId;
     public UserDTO(User b){
         this.id=b.getId();
         this.username = b.getUsername();
@@ -35,5 +35,6 @@ public class UserDTO {
         this.description=b.getDescription();
         this.birthday=b.getBirthday();
         this.status=b.isStatus();
+        this.themeId =b.getThemes().getId();
     }
 }

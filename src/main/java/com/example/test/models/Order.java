@@ -67,6 +67,8 @@ public class Order {
     private String district;
     @Column(name = "ward")
     private String ward;
+    @Column(name = "value")
+    private String value;
     @CreationTimestamp
     @Column(name = "order_time", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)

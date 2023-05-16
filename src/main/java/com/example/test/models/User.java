@@ -50,14 +50,17 @@ public class User {
 
     @Column(name = "status")
     private boolean status;
-
+    //order
     @OneToMany(mappedBy = "user")
     private List<Order> order;
 
     //stocks
     @OneToMany(mappedBy = "user")
     private List<Stocks> stocks;
-
+    //theme
+    @ManyToOne()
+    @JoinColumn(name = "theme_id", nullable=false)
+    private Theme themes;
     public User(UserDTO dto){
         this.id = dto.getId();
         this.username = dto.getUsername();

@@ -43,6 +43,7 @@ public class CustomerViewDTO {
     private String province;
     private String district;
     private String ward;
+    private Boolean sex;
 
     private List<CustomerAddressDTO> customerAddressDTO;
 
@@ -60,6 +61,7 @@ public class CustomerViewDTO {
         this.weight=c.getWeight();
         this.birthday=c.getBirthday();
         this.status= c.getStatus();
+        this.sex=c.getSex();
         //lấy customer address
         //lay danh sach order detail
         List<CustomerAddress> customerAddresses = c.getCustomerAddresses();//lay ra
@@ -68,8 +70,8 @@ public class CustomerViewDTO {
             customerAddressDTO.add(new CustomerAddressDTO(p));
         });
         this.customerAddressDTO = customerAddressDTO;
-    this.province=c.getProvince();
-    this.district=c.getDistrict();
-    this.ward=c.getWard();
+        this.province=c.getProvince();
+        this.district=c.getDistrict();
+        this.ward=c.getWard();
     }
 }

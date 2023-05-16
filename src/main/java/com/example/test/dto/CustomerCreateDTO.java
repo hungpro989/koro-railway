@@ -39,6 +39,7 @@ public class CustomerCreateDTO {
     private String province;
     private String district;
     private String ward;
+    private Boolean sex;
 
     public CustomerCreateDTO(Customer c) {
         this.id=c.getId();
@@ -57,5 +58,6 @@ public class CustomerCreateDTO {
         this.ward=c.getWard();
         this.district=c.getDistrict();
         this.province=c.getProvince();
+        this.sex=c.getSex();
     }
 }
