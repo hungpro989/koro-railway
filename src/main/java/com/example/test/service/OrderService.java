@@ -354,11 +354,13 @@ public class OrderService implements IOrderService {
                 customer.setImage("/file/images/shopping.png");
                 customer.setStatus(true);
                 if(jsonContext.read("$.customer.gender")!=null) {
-                    String gender = jsonContext.read("$.gender");
-                    customer.setSex(gender == "male" ? true : false);
+                    String gender = jsonContext.read("$.customer.gender");
+                    customer.setSex(gender.equals("male") ? true : false);
                 }
                 customer.setBirthday(jsonContext.read("$.customer.date_of_birth"));
-                customer.setEmail(jsonContext.read("$.customer.emails[0]"));
+//                if(jsonContext.read("$.customer.emails")!=null){
+//                    customer.setEmail(jsonContext.read("$.customer.emails.[0]"));
+//                }
                 customerRepository.save(customer);
             }else {
                 customer=customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number"));
