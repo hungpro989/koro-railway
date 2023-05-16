@@ -336,6 +336,7 @@ public class OrderService implements IOrderService {
     }
 
     public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
+        System.out.println(orderPosCake);
         DocumentContext jsonContext = JsonPath.parse(orderPosCake);
         String event_type = jsonContext.read("$.event_type");
         String billCode = jsonContext.read("$.id");
