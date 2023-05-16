@@ -42,4 +42,15 @@ public class ProductDetailService implements IProductDetailService
         return listDto;
     }
 
+    @Override
+    public ProductDetailDTO findProductDetailByCodeName(String s) {
+        ProductDetail pd = productDetailRepository.findProductDetailByCodeName(s);
+        ProductDetailDTO dto = new ProductDetailDTO(pd);
+        if (dto != null) {
+            return dto;
+        }
+        return null;
+    }
+
+
 }

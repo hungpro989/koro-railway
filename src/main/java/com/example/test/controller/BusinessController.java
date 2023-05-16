@@ -3,6 +3,7 @@ package com.example.test.controller;
 import com.example.test.dto.BusinessDTO;
 import com.example.test.dto.ResponseObject;
 import com.example.test.models.Business;
+import com.example.test.repository.BusinessRepository;
 import com.example.test.service.BusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,8 @@ import java.util.List;
 public class BusinessController {
     @Autowired
     BusinessService businessService;
+    @Autowired
+    private BusinessRepository businessRepository;
 
     @GetMapping
     public ResponseEntity<ResponseObject> getAllProduct(){
@@ -31,6 +34,14 @@ public class BusinessController {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy sản phẩm thành công", businessService.getBusinessById(id)));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy sản phẩm có id như trên", null));
+    }
+    @GetMapping("/page-id/{id}")
+    public ResponseEntity<ResponseObject> getByPageId(@PathVariable String id){
+        Business business = businessRepository.findBusinessByCodeName(id);
+        if(business!=null){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Lấy business thành công", business));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy business  có id như trên", null));
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject> deleteBusiness(@PathVariable("id") Integer id){

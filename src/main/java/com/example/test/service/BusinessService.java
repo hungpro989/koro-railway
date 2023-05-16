@@ -2,7 +2,6 @@ package com.example.test.service;
 
 import com.example.test.dto.BusinessDTO;
 import com.example.test.models.Business;
-import com.example.test.models.ProvidersNCC;
 import com.example.test.repository.BusinessRepository;
 import com.example.test.repository.SourceRepository;
 import com.example.test.serviceImpl.IBusinessService;
@@ -78,4 +77,16 @@ public class BusinessService implements IBusinessService {
         //ko tồn tại trong db
         return false;
     }
+
+    @Override
+    public BusinessDTO findBusinessByPageId(String id) {
+        Business b = businessRepository.findBusinessByPageId(id);
+        BusinessDTO dto = new BusinessDTO(b);
+        if(dto!=null){
+            return dto;
+        }
+        return null;
+    }
+
+
 }

@@ -9,4 +9,5 @@ public interface IProductDetailService {
     ProductDetail save(ProductDetail productDetail);
     String copyProductDetail(Integer id);
     List<ProductDetailDTO> getAllProductDetail();
+    ProductDetailDTO findProductDetailByCodeName(String s);
 }

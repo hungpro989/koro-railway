@@ -5,8 +5,13 @@ import com.example.test.dto.OrderDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "order_detail")
@@ -27,16 +32,17 @@ public class OrderDetail {
 
     @Column(name = "quantity")
     private Integer quantity;
-//    @CreationTimestamp
-//    @Column(name = "created_at", updatable = false)
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @CreatedDate
-//    private Date createdAt;
-    @Column(name = "created_at")
-    private java.sql.Timestamp createdAt;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    private Date createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
-    private java.sql.Timestamp updatedAt;
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
 
 
     //quan he vs order

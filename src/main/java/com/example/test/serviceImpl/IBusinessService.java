@@ -14,4 +14,6 @@ public interface IBusinessService {
 
     boolean checkExistName(String name);
     boolean checkExistId(Integer id);
+    BusinessDTO findBusinessByPageId(String id);
+
 }

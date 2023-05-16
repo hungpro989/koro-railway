@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BusinessRepository extends JpaRepository<Business, Integer> {
     Business findBusinessByCodeName(String name);
+    Business findBusinessByPageId(String pageId);
 }

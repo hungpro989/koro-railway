@@ -11,6 +11,7 @@ import java.util.List;
 public interface IProductService {
     List<ProductDTOAdmin> getAllProduct();
     ProductDTOAdmin getProducById(Integer id);
+
     void deleteById(Integer id);
     boolean save(Product product);
     Product checkExistName(String name);
@@ -48,4 +49,6 @@ public interface IProductService {
     void handleWhenCreateStock(Integer quantity, ProductDetail dto);
     //xử lý số lượng sản phẩm khi huỷ tạo stock:
     void handleWhenCancelCreateStock(Integer quantity, ProductDetail dto);
+
+
 }
