@@ -408,7 +408,64 @@ public class OrderService implements IOrderService {
             orderRepository.save(o);
             createProductDetailByPosCake(orderPosCake, o);
         } else if (event_type.equals("update") && orderDTO!=null) {
+            //cập nhật customer của đơn cần update
+            Customer customer = new Customer();
+            customer=customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number"));
+            customer.setFullName(jsonContext.read("$.shipping_address.full_name")!=null?jsonContext.read("$.shipping_address.full_name"):customer.getFullName());
+            customer.setPhone(jsonContext.read("$.shipping_address.phone_number")!=null?jsonContext.read("$.shipping_address.phone_number"):customer.getPhone());
+            customer.setAddress(jsonContext.read("$.shipping_address.address")!=null?jsonContext.read("$.shipping_address.address"):customer.getAddress());
+            customer.setWard(jsonContext.read("$.shipping_address.commnue_name")!=null?jsonContext.read("$.shipping_address.commnue_name"):customer.getWard());
+            customer.setDistrict(jsonContext.read("$.shipping_address.district_name")!=null?jsonContext.read("$.shipping_address.district_name"):customer.getDistrict());
+            customer.setProvince(jsonContext.read("$.shipping_address.province_name")!=null?jsonContext.read("$.shipping_address.province_name"):customer.getProvince());
+            if(jsonContext.read("$.customer.emails")!=null){
+                customer.setEmail(jsonContext.read("$.customer.emails.[0]")!=null?jsonContext.read("$.customer.emails.[0]"):customer.getEmail());
+            }
+            customerRepository.save(customer);
+
+            //xử lý chuỗi string json ra từng thuộc tính
+//            Integer shipping_fee = jsonContext.read("$.shipping_fee");
+//            Integer productMoney = jsonContext.read("$.total_price");
+//            Integer paid = jsonContext.read("$.transfer_money");
+//            Integer discount = jsonContext.read("$.total_discount");
+//            Integer totalMoney = productMoney+shipping_fee-discount;
+//            Integer totalAmount = jsonContext.read("$.cod");
+//
+//            Order o = new Order(orderDTO);
+            //xử lý order status
+//            o.setOrderStatus(orderStatusRepository.findById(2).orElse(null)); //trạng thái đơn hàng
+//            //xử lý order type
+//            o.setOrderType(orderTypeRepository.findById(1).orElse(null));// kiểu đơn
+//            BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
+//            Business business = new Business(businessDTO);
+//            o.setBusiness(business); // business
+//            //xử lý delivery
+//            o.setDelivery(deliveryRepository.findById(6).orElse(null));//đơn vị vận chuyển
+//            //xử lý người bán hàng
+//            o.setUser(userRepository.findById(1).orElse(null));//đơn của nhân viên A
+//            //xử lý người tạo đơn
+//            o.setUser1(userRepository.findById(1).orElse(null));//người tạo đơn của nhân viên A
+//
+//            o.setName(jsonContext.read("$.shipping_address.full_name"));
+//            o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
+//            o.setAddress(jsonContext.read("$.shipping_address.full_address"));
+//            o.setBillCode(jsonContext.read("$.id"));
+//            o.setDiscount(Double.valueOf(discount));
+//            o.setProductMoney(Double.valueOf(productMoney));
+//            o.setPaid(Double.valueOf(paid));
+//            o.setShippingPrice(Double.valueOf(shipping_fee));
+//            o.setTotalMoney(Double.valueOf(totalMoney));
+//            o.setPaymentAmount(Double.valueOf(totalAmount));
+//            o.setInternalNotes(jsonContext.read("$.note"));
+//            o.setShippingNotes(jsonContext.read("$.note_print"));
+//            o.setProvince(jsonContext.read("$.shipping_address.province_name"));
+//            o.setDistrict(jsonContext.read("$.shipping_address.district_name"));
+//            o.setWard(jsonContext.read("$.shipping_address.commnue_name"));
+//            o.setValue(orderPosCake);
+//            o.setCustomer(customer);
+//            orderRepository.save(o);
+//            createProductDetailByPosCake(orderPosCake, o);
             System.out.println("update");
+            System.out.println(orderPosCake);
         }else{
             System.out.println("NG");
         }
