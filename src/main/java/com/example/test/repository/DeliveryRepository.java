@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeliveryRepository extends JpaRepository<Delivery, Integer> {
     Delivery findDeliveryByCodeName(String codeName);
+    Delivery findDeliveryByName(String name);
 }

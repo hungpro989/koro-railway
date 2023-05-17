@@ -11,7 +11,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -19,19 +18,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static com.example.test.common.common.generateString;
 
 @Service
 public class OrderService implements IOrderService {
+    @Autowired
+    UserService userService;
+    @Autowired
+    OrderTypeService orderTypeService;
+    @Autowired
+    OrderStatusService orderStatusService;
+    @Autowired
+    DeliveryService deliveryService;
     @Autowired
     BusinessService businessService;
     @Autowired
@@ -336,7 +338,11 @@ public class OrderService implements IOrderService {
     }
 
     public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
-        System.out.println(orderPosCake);
+        //gson
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+        //JsonPath
         DocumentContext jsonContext = JsonPath.parse(orderPosCake);
         String event_type = jsonContext.read("$.event_type");
         String billCode = jsonContext.read("$.id");
@@ -378,6 +384,7 @@ public class OrderService implements IOrderService {
             o.setOrderStatus(orderStatusRepository.findById(2).orElse(null)); //trạng thái đơn hàng
             //xử lý order type
             o.setOrderType(orderTypeRepository.findById(1).orElse(null));// kiểu đơn
+            //Xử lý business
             BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
             Business business = new Business(businessDTO);
             o.setBusiness(business); // business
@@ -417,55 +424,84 @@ public class OrderService implements IOrderService {
             customer.setWard(jsonContext.read("$.shipping_address.commnue_name")!=null?jsonContext.read("$.shipping_address.commnue_name"):customer.getWard());
             customer.setDistrict(jsonContext.read("$.shipping_address.district_name")!=null?jsonContext.read("$.shipping_address.district_name"):customer.getDistrict());
             customer.setProvince(jsonContext.read("$.shipping_address.province_name")!=null?jsonContext.read("$.shipping_address.province_name"):customer.getProvince());
-            if(jsonContext.read("$.customer.emails")!=null){
-                customer.setEmail(jsonContext.read("$.customer.emails.[0]")!=null?jsonContext.read("$.customer.emails.[0]"):customer.getEmail());
+
+            if (jsonObject.has("customer")) {
+                JsonObject customerObject = jsonObject.getAsJsonObject("customer");
+                JsonArray emailsArray = customerObject.getAsJsonArray("emails");
+                if (emailsArray.size() > 0) {
+                    String firstEmail = emailsArray.get(0).getAsString();
+                    customer.setEmail(firstEmail);
+                }
             }
             customerRepository.save(customer);
 
             //xử lý chuỗi string json ra từng thuộc tính
-//            Integer shipping_fee = jsonContext.read("$.shipping_fee");
-//            Integer productMoney = jsonContext.read("$.total_price");
-//            Integer paid = jsonContext.read("$.transfer_money");
-//            Integer discount = jsonContext.read("$.total_discount");
-//            Integer totalMoney = productMoney+shipping_fee-discount;
-//            Integer totalAmount = jsonContext.read("$.cod");
-//
-//            Order o = new Order(orderDTO);
+            Integer shipping_fee = jsonContext.read("$.shipping_fee");
+            Integer productMoney = jsonContext.read("$.total_price");
+            Integer paid = jsonContext.read("$.transfer_money");
+            Integer discount = jsonContext.read("$.total_discount");
+            Integer totalMoney = productMoney+shipping_fee-discount;
+            Integer totalAmount = jsonContext.read("$.cod");
+            System.out.println(orderDTO);
+            Order o = new Order(orderDTO);
             //xử lý order status
-//            o.setOrderStatus(orderStatusRepository.findById(2).orElse(null)); //trạng thái đơn hàng
-//            //xử lý order type
-//            o.setOrderType(orderTypeRepository.findById(1).orElse(null));// kiểu đơn
-//            BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
-//            Business business = new Business(businessDTO);
-//            o.setBusiness(business); // business
-//            //xử lý delivery
-//            o.setDelivery(deliveryRepository.findById(6).orElse(null));//đơn vị vận chuyển
-//            //xử lý người bán hàng
-//            o.setUser(userRepository.findById(1).orElse(null));//đơn của nhân viên A
-//            //xử lý người tạo đơn
-//            o.setUser1(userRepository.findById(1).orElse(null));//người tạo đơn của nhân viên A
-//
-//            o.setName(jsonContext.read("$.shipping_address.full_name"));
-//            o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
-//            o.setAddress(jsonContext.read("$.shipping_address.full_address"));
-//            o.setBillCode(jsonContext.read("$.id"));
-//            o.setDiscount(Double.valueOf(discount));
-//            o.setProductMoney(Double.valueOf(productMoney));
-//            o.setPaid(Double.valueOf(paid));
-//            o.setShippingPrice(Double.valueOf(shipping_fee));
-//            o.setTotalMoney(Double.valueOf(totalMoney));
-//            o.setPaymentAmount(Double.valueOf(totalAmount));
-//            o.setInternalNotes(jsonContext.read("$.note"));
-//            o.setShippingNotes(jsonContext.read("$.note_print"));
-//            o.setProvince(jsonContext.read("$.shipping_address.province_name"));
-//            o.setDistrict(jsonContext.read("$.shipping_address.district_name"));
-//            o.setWard(jsonContext.read("$.shipping_address.commnue_name"));
-//            o.setValue(orderPosCake);
-//            o.setCustomer(customer);
-//            orderRepository.save(o);
+            if(jsonObject.has("partner")){
+                JsonObject partnerObject = jsonObject.getAsJsonObject("partner");
+                String partnerStatus = jsonContext.read("$.partner.partner_status");
+                System.out.println(partnerStatus);
+                if(partnerStatus !=null){
+                    Integer orderStatusId = handleChangeOrderStatus(jsonContext.read("$.partner.partner_status"));
+                    OrderStatusDTO orderStatusDTO = orderStatusService.getById(orderStatusId);
+                    OrderStatus orderStatus= new OrderStatus(orderStatusDTO);
+                    o.setOrderStatus(orderStatus); //trạng thái đơn hàng
+                }else{
+                    OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
+                    o.setOrderStatus(orderStatus);
+                }
+                //xử lý delivery
+                if(partnerObject.has("partner_name")){
+                    String partnerName = jsonContext.read("$.partner.partner_name");
+                    DeliveryDTO deliveryDTO = deliveryService.findByName(partnerName);
+                    Delivery delivery= new Delivery(deliveryDTO);
+                    o.setDelivery(delivery); //đơn vị vận chuyển
+                }else{
+                    Delivery delivery= new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
+                    o.setDelivery(delivery);
+                }
+            }
+            User user = new User(userService.getById(1));
+            //xử lý người bán hàng
+            o.setUser(user);
+            //xử lý người tạo đơn
+            o.setUser1(user);
+            //xử lý order type
+            OrderType orderType = new OrderType(orderTypeService.getById(1));
+            o.setOrderType(orderType);// kiểu đơn
+            //Xử lý business
+            BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
+            Business business = new Business(businessDTO);
+
+            o.setBusiness(business); // business
+            o.setId(orderDTO.getId());
+            o.setName(jsonContext.read("$.shipping_address.full_name"));
+            o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
+            o.setAddress(jsonContext.read("$.shipping_address.address"));
+            o.setDiscount(Double.valueOf(discount));
+            o.setProductMoney(Double.valueOf(productMoney));
+            o.setPaid(Double.valueOf(paid));
+            o.setShippingPrice(Double.valueOf(shipping_fee));
+            o.setTotalMoney(Double.valueOf(totalMoney));
+            o.setPaymentAmount(Double.valueOf(totalAmount));
+            o.setInternalNotes(jsonContext.read("$.note"));
+            o.setShippingNotes(jsonContext.read("$.note_print"));
+            o.setProvince(jsonContext.read("$.shipping_address.province_name"));
+            o.setDistrict(jsonContext.read("$.shipping_address.district_name"));
+            o.setWard(jsonContext.read("$.shipping_address.commnue_name"));
+            o.setValue(orderPosCake);
+            o.setCustomer(customer);
+
+            orderRepository.save(o);
 //            createProductDetailByPosCake(orderPosCake, o);
-            System.out.println("update");
-            System.out.println(orderPosCake);
         }else{
             System.out.println("NG");
         }
@@ -495,5 +531,41 @@ public class OrderService implements IOrderService {
                 }
             }
         }
+    }
+    public Integer handleChangeOrderStatus(String partnerStatus){
+        Integer orderStatusId=0;
+        if(partnerStatus.equals("request_received")){
+            orderStatusId=2;
+        }else if(partnerStatus.equals("delay_pickup")){
+            orderStatusId=20;
+        }else if(partnerStatus.equals("picking_up")){
+            orderStatusId=11;
+        }else if(partnerStatus.equals("picked_up")){
+            orderStatusId=4;
+        }else if(partnerStatus.equals("on_the_way")){
+            orderStatusId=12;
+        }else if(partnerStatus.equals("delay_delivery")){
+            orderStatusId=13;
+        }else if(partnerStatus.equals("out_for_delivery")){
+            orderStatusId=14;
+        }else if(partnerStatus.equals("waiting_for_return")){
+            orderStatusId=16;
+        }else if(partnerStatus.equals("delivered")){
+            orderStatusId=17;
+        }else if(partnerStatus.equals("delivered_cod")){
+            orderStatusId=6;
+        }else if(partnerStatus.equals("returning")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("returned")){
+            orderStatusId=8;
+        }else if(partnerStatus.equals("returned_cod")){
+            orderStatusId=18;
+        }else if(partnerStatus.equals("canceled")){
+            orderStatusId=10;
+        }else{
+            orderStatusId=19;
+        }
+
+        return orderStatusId;
     }
 }

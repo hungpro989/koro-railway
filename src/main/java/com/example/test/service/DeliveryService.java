@@ -71,4 +71,13 @@ public class DeliveryService implements IDeliveryService {
         }
         return false;
     }
+
+    @Override
+    public DeliveryDTO findByName(String name) {
+        Delivery delivery = deliveryRepository.findDeliveryByName(name);
+        if(delivery!=null){
+            return new DeliveryDTO(delivery);
+        }
+        return null;
+    }
 }

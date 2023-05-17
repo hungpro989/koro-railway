@@ -12,4 +12,5 @@ public interface IDeliveryService {
     boolean save(Delivery delivery);
     boolean checkExistName(String name);
     boolean checkExistId(Integer id);
+    DeliveryDTO findByName(String name);
 }
