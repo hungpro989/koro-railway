@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderDetailRepository extends JpaRepository<OrderDetail, Integer> {
-
+    OrderDetail findOrderDetailByProductDetail_IdAndOrders_id(Integer productDetailId, Integer orderId);
 }

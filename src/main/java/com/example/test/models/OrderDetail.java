@@ -57,7 +57,6 @@ public class OrderDetail {
 
     public OrderDetail(OrderDetailDTO dto) {
         this.id = dto.getId();
-//        this.productDetail = dto;
         this.price =dto.getPrice();
         this.discount=dto.getDiscount();
         this.quantity = dto.getQuantity();

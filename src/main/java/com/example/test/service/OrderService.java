@@ -62,6 +62,8 @@ public class OrderService implements IOrderService {
     CustomerRepository customerRepository;
     @Autowired
     private TagRepository tagRepository;
+    @Autowired
+    private OrderDetailRepository orderDetailRepository;
 
     @Override
     public List<OrderDTO> getAll() {
@@ -363,9 +365,14 @@ public class OrderService implements IOrderService {
                     customer.setSex(gender.equals("male") ? true : false);
                 }
                 customer.setBirthday(jsonContext.read("$.customer.date_of_birth"));
-//                if(jsonContext.read("$.customer.emails")!=null){
-//                    customer.setEmail(jsonContext.read("$.customer.emails.[0]"));
-//                }
+                if (jsonObject.has("customer")) {
+                    JsonObject customerObject = jsonObject.getAsJsonObject("customer");
+                    JsonArray emailsArray = customerObject.getAsJsonArray("emails");
+                    if (emailsArray.size() > 0) {
+                        String firstEmail = emailsArray.get(0).getAsString();
+                        customer.setEmail(firstEmail);
+                    }
+                }
                 customerRepository.save(customer);
             }else {
                 customer=customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number"));
@@ -504,7 +511,7 @@ public class OrderService implements IOrderService {
             o.setCustomer(customer);
 
             orderRepository.save(o);
-//            createProductDetailByPosCake(orderPosCake, o);
+            updateProductDetailByPosCake(orderPosCake, o);
         }else{
             System.out.println("NG");
         }
@@ -525,6 +532,33 @@ public class OrderService implements IOrderService {
                 ProductDetail pd = new ProductDetail(dto);
                 if(pd!=null){
                     OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setProductDetail(pd);
+                    orderDetail.setOrders(o);
+                    orderDetail.setQuantity(quantity);
+                    orderDetail.setPrice(Float.valueOf(retailPrice));
+                    orderDetail.setDiscount(Float.valueOf(0));
+                    orderDetailService.save(orderDetail);
+                }
+            }
+        }
+    }
+    public void updateProductDetailByPosCake(String orderPosCake, Order o){
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
+        if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonArray itemsArray = jsonObject.getAsJsonArray("items");
+            for (JsonElement itemElement : itemsArray) {
+                JsonObject itemObject = itemElement.getAsJsonObject();
+                Integer quantity = itemObject.get("quantity").getAsInt();
+                JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
+                String displayId = variationInfoObject.get("display_id").getAsString();
+                Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
+                ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
+                ProductDetail pd = new ProductDetail(dto);
+                if(pd!=null){
+                    OrderDetailDTO orderDetailDTO = orderDetailService.findbyOrderIdAndProductDetailId(pd.getId(),o.getId());
+                    OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
                     orderDetail.setProductDetail(pd);
                     orderDetail.setOrders(o);
                     orderDetail.setQuantity(quantity);
