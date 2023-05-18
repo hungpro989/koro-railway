@@ -441,13 +441,10 @@ public class OrderService implements IOrderService {
             Integer discount = jsonContext.read("$.total_discount");
             Integer totalMoney = productMoney+shipping_fee-discount;
             Integer totalAmount = jsonContext.read("$.cod");
-            System.out.println(orderDTO);
             Order o = new Order(orderDTO);
-            System.out.println(o);
             //xử lý order status + delivery
 //            String partner = jsonContext.read("$.partner");
             JsonElement partner = jsonObject.get("partner");
-            System.out.println("partner: "+partner);
             if(partner.isJsonObject() && !partner.isJsonNull()){
                 JsonObject partnerObject = jsonObject.getAsJsonObject("partner");
                 String partnerStatus = jsonContext.read("$.partner.partner_status");
@@ -470,7 +467,7 @@ public class OrderService implements IOrderService {
                 }
             }else{
                 //xử lý status order khi ko tìm thấy part_name
-                OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(3));
+                OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
                 o.setOrderStatus(orderStatus);
                 //xử lý delivery khi ko tìm thấy part_name
                 Delivery delivery= new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
@@ -487,7 +484,6 @@ public class OrderService implements IOrderService {
             //Xử lý business
             BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
             Business business = new Business(businessDTO);
-
             o.setBusiness(business); // business
 //            o.setId(orderDTO.getId());
             o.setName(jsonContext.read("$.shipping_address.full_name"));
