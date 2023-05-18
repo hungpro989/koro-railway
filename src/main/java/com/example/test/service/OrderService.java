@@ -445,7 +445,8 @@ public class OrderService implements IOrderService {
             System.out.println(orderDTO);
             Order o = new Order(orderDTO);
             //xử lý order status
-            if(jsonObject.has("partner")){
+            String partner = jsonContext.read("$.partner");
+            if(jsonObject.has("partner") && partner!=null){
                 JsonObject partnerObject = jsonObject.getAsJsonObject("partner");
                 String partnerStatus = jsonContext.read("$.partner.partner_status");
                 System.out.println(partnerStatus);
@@ -454,20 +455,22 @@ public class OrderService implements IOrderService {
                     OrderStatusDTO orderStatusDTO = orderStatusService.getById(orderStatusId);
                     OrderStatus orderStatus= new OrderStatus(orderStatusDTO);
                     o.setOrderStatus(orderStatus); //trạng thái đơn hàng
-                }else{
-                    OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
-                    o.setOrderStatus(orderStatus);
                 }
                 //xử lý delivery
+                System.out.println(orderDTO.getDeliveryDTO().getId());
                 if(partnerObject.has("partner_name")){
                     String partnerName = jsonContext.read("$.partner.partner_name");
                     DeliveryDTO deliveryDTO = deliveryService.findByName(partnerName);
                     Delivery delivery= new Delivery(deliveryDTO);
                     o.setDelivery(delivery); //đơn vị vận chuyển
-                }else{
-                    Delivery delivery= new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
-                    o.setDelivery(delivery);
                 }
+            }else{
+                //xử lý status order khi ko tìm thấy part_name
+                OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
+                o.setOrderStatus(orderStatus);
+                //xử lý delivery khi ko tìm thấy part_name
+                Delivery delivery= new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
+                o.setDelivery(delivery);
             }
             User user = new User(userService.getById(1));
             //xử lý người bán hàng
