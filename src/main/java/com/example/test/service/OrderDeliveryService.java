@@ -83,7 +83,15 @@ public class OrderDeliveryService implements IOrderDeliveryRepository {
             return false;
         }
     }
-
+//    public void saveOrderDelivery(OrderDeliveryDTO dto) {
+//            //lưu response delivery gửi về
+//            OrderDelivery orderDelivery = new OrderDelivery(dto);
+//            orderDelivery.setDelivery(deliveryRepository.findById(dto.getDeliveryId()).orElse(null));
+//            orderDelivery.setOrder(orderRepository.findById(dto.getOrderId()).orElse(null));
+//            if(checkExistCodeDelivery(dto.getCodeDelivery())){
+//                orderDeliveryRepository.save(orderDelivery);
+//            }
+//    }
     @Override
     public boolean checkExistCodeDelivery(String s) {
         return orderDeliveryRepository.findOrderDeliveryByCodeDelivery(s)== null;

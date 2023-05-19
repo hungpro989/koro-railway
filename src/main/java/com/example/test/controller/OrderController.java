@@ -147,8 +147,9 @@ public class OrderController {
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Xoá product detail thất bại", null));
     }
+    //vừa lưu order delivery vừa cập nhật trạng thái order
     @PutMapping("/save-data-delivery")
-    public ResponseEntity<ResponseObject>  createOrderDelivery(@RequestBody OrderDeliveryDTO orderDeliveryDTO){
+    public ResponseEntity<ResponseObject>  createDateDelivery(@RequestBody OrderDeliveryDTO orderDeliveryDTO){
             if(orderDeliveryService.save(orderDeliveryDTO)){
                 return ResponseEntity.ok().body(new ResponseObject("success", "Lưu order delivery thành công", orderDeliveryDTO.getCodeDelivery()));
             }

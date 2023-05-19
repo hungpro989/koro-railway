@@ -27,6 +27,8 @@ import static com.example.test.common.common.generateString;
 @Service
 public class OrderService implements IOrderService {
     @Autowired
+    OrderDeliveryRepository orderDeliveryRepository;
+    @Autowired
     UserService userService;
     @Autowired
     OrderTypeService orderTypeService;
@@ -512,6 +514,14 @@ public class OrderService implements IOrderService {
 
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
+            if(partner.isJsonObject() && !partner.isJsonNull()){
+                OrderDelivery orderDelivery = new OrderDelivery();
+                orderDelivery.setOrder(o);
+                orderDelivery.setStatus(true);
+                orderDelivery.setDelivery(new Delivery(deliveryService.findByName(jsonContext.read("$.partner.partner_name"))));
+                orderDelivery.setCodeDelivery(jsonContext.read("$.partner.extend_code"));
+                orderDeliveryRepository.save(orderDelivery);
+            }
         }else{
             System.out.println("NG");
         }
