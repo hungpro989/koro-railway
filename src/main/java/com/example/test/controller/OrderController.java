@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +34,10 @@ public class OrderController {
     OrderDeliveryService orderDeliveryService;
     @Autowired
     ProductService productService;
+    private final SimpMessagingTemplate messagingTemplate;
+    public OrderController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     //get all
     @GetMapping
     public ResponseEntity<ResponseObject> getAll(){
@@ -92,6 +97,8 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<ResponseObject> createOrder(@RequestBody OrderCreateDTO orderCreateDTO){
         if(orderService.save(orderCreateDTO)){
+
+            messagingTemplate.convertAndSend("/topic/orders", "create");
             return ResponseEntity.ok().body(new ResponseObject("success", "Tạo đơn hàng thành công", orderCreateDTO));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Tạo đơn hàng thất bại", null));
@@ -101,7 +108,9 @@ public class OrderController {
         if(orderService.getById(id)==null){
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy Id đơn hàng tương ứng", null));
         }
-        if(orderService.save(orderDTO)){
+        Boolean check = orderService.save(orderDTO);
+        if(check){
+            messagingTemplate.convertAndSend("/topic/orders", orderDTO.getId());
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật đơn hàng thất bại", orderDTO));
@@ -151,6 +160,7 @@ public class OrderController {
     @PutMapping("/save-data-delivery")
     public ResponseEntity<ResponseObject>  createDateDelivery(@RequestBody OrderDeliveryDTO orderDeliveryDTO){
             if(orderDeliveryService.save(orderDeliveryDTO)){
+                messagingTemplate.convertAndSend("/topic/orders", orderDeliveryDTO.getOrderId());
                 return ResponseEntity.ok().body(new ResponseObject("success", "Lưu order delivery thành công", orderDeliveryDTO.getCodeDelivery()));
             }
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Lưu order delivery thất bại", null));

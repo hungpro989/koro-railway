@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
+
 @RestController
 @RequestMapping("/api/v1/customers")
 @CrossOrigin
@@ -92,10 +94,10 @@ public class CustomerController {
     @GetMapping("/find-customer-by-phone/{phone}")
     public ResponseEntity<ResponseObject> findCustomerByPhone(@PathVariable String phone){
         CustomerCreateDTO dto = customerService.checkExistPhone(phone);
-        if (dto!=null){
+        if (Objects.nonNull(dto)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Kiểm tra thông tin KH bằng SĐT thành công", dto));
         }
-        return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy KH có sdt như trên", null));
+        return ResponseEntity.ok().body(new ResponseObject("ok", "Không tìm thấy KH có sdt như trên", null));
     }
     @GetMapping("/order-by-customer/{id}")
     public ResponseEntity<ResponseObject> getAllByCustomer(@PathVariable Integer id){

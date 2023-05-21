@@ -95,18 +95,24 @@ public class OrderDTO {
         //lay danh sach order detail
         List<OrderDetail> orderDetail = o.getOrderDetail();//lay ra
         List<OrderDetailDTO> orderDetailDTO = new ArrayList<>();//tao mang moi
-        orderDetail.forEach(p-> {
-            orderDetailDTO.add(new OrderDetailDTO(p));
-        });
-        this.orderDetail = orderDetailDTO;
+        if(orderDetail!=null){
+            orderDetail.forEach(p-> {
+                orderDetailDTO.add(new OrderDetailDTO(p));
+            });
+            this.orderDetail = orderDetailDTO;
+        }
+
 
         //lấy danh sách order tag
         List<OrderTag> orderTag = o.getOrderTag();
         List<OrderTagDTO> orderTagDTO = new ArrayList<>();
-        orderTag.forEach(p->{
-            orderTagDTO.add(new OrderTagDTO(p));
-        });
-        this.orderTag = orderTagDTO;
+        if(orderTag!=null){
+            orderTag.forEach(p->{
+                orderTagDTO.add(new OrderTagDTO(p));
+            });
+            this.orderTag = orderTagDTO;
+        }
+
 
         //order delivery
         OrderDelivery orderDelivery = o.getOrderDelivery();

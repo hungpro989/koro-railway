@@ -61,8 +61,7 @@ public class CustomerService implements ICustomerService {
 
     @Override
     public CustomerCreateDTO checkExistPhone(String phone) {
-        Customer customer =  customerRepository.findCustomerByPhone(phone);
-        CustomerCreateDTO dto = new CustomerCreateDTO(customer);
+        CustomerCreateDTO dto = new CustomerCreateDTO(customerRepository.findCustomerByPhone(phone));
         return dto;
     }
 

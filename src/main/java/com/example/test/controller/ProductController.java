@@ -5,12 +5,16 @@ import com.example.test.models.Product;
 import com.example.test.service.ImageService;
 import com.example.test.service.ProductDetailService;
 import com.example.test.service.ProductService;
+import com.example.test.websocket.MessageService;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,11 +27,17 @@ import java.util.Objects;
 @RequestMapping("/api/v1/products")
 public class ProductController {
     @Autowired
+    MessageService messageService;
+    @Autowired
     ProductService productService;
     @Autowired
     ProductDetailService productDetailService;
     @Autowired
     ImageService imageService;
+    private final SimpMessagingTemplate messagingTemplate;
+    public ProductController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     @GetMapping
     public ResponseEntity<ResponseObject> getAllProduct(){
         List<ProductDTOAdmin> listDto = productService.getAllProduct();
@@ -60,6 +70,8 @@ public class ProductController {
     public ResponseEntity<ResponseObject> updateProduct(@RequestBody ProductCreateDTO product, @PathVariable Integer id){
         String check = productService.updateAndCheckProduct(product,id);
         if(Objects.equals(check, "true")){
+            messagingTemplate.convertAndSend("/topic/products", product);
+
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật sản phẩm mới thành công", null));
         }else if(Objects.equals(check, "false01")){
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Đã tồn tại tên sản phẩm: "+product.getName(), null));
