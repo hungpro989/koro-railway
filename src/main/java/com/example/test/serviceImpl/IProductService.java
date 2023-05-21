@@ -46,7 +46,7 @@ public interface IProductService {
     //xử lý số lượng sản phẩm khi hoàn hàng:
     void handleWhenReFundOrder(Integer quantity, ProductDetail dto);
     //xử lý số lượng sản phẩm khi tạo stock:
-    void handleWhenCreateStock(Integer quantity, ProductDetail dto);
+    boolean handleWhenCreateStock(Integer quantity, ProductDetail dto);
     //xử lý số lượng sản phẩm khi huỷ tạo stock:
     void handleWhenCancelCreateStock(Integer quantity, ProductDetail dto);
 

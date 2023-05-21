@@ -9,6 +9,7 @@ import com.example.test.service.StockDetailService;
 import com.example.test.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,10 @@ import java.util.List;
 @CrossOrigin
 @RequestMapping("/api/v1/stocks")
 public class StockController {
+    private final SimpMessagingTemplate messagingTemplate;
+    public StockController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
     @Autowired
     StockService stockService;
     @Autowired
@@ -45,6 +50,7 @@ public class StockController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseObject> deleteStock(@PathVariable("id") Integer id){
         if(stockService.deleteById(id)){
+            messagingTemplate.convertAndSend("/topic/products", "changeAll");
             return ResponseEntity.ok().body(new ResponseObject("success", "Xoá stocks thành công với id = ", id));
         };
         return ResponseEntity.ok().body(new ResponseObject("success", "Xoá stocks thất bại với id = ", id));
@@ -67,6 +73,7 @@ public class StockController {
     @PostMapping("/change-quantity-stock-complete")
     public ResponseEntity<ResponseObject> changeQuantityStockComplete(@RequestBody StockCreateDTO dto){
         if(stockService.changeQuantityStockComplete(dto)){
+            messagingTemplate.convertAndSend("/topic/products", "changeAll");
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật số lượng trong sản phẩm thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật số lượng trong sản phẩm thất bại", null));
@@ -74,6 +81,7 @@ public class StockController {
     @DeleteMapping("/stock-detail/{id}")
     public ResponseEntity<ResponseObject> deleteOrderDetail(@PathVariable Integer id){
         if(stockDetailService.deleteById(id)){
+            messagingTemplate.convertAndSend("/topic/products", "changeAll");
             return ResponseEntity.ok().body(new ResponseObject("success", "Xoá stock detail thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Xoá stock detail thất bại", null));

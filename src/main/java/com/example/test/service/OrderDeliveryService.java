@@ -9,6 +9,8 @@ import com.example.test.serviceImpl.IOrderDeliveryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 @Service
 public class OrderDeliveryService implements IOrderDeliveryRepository {
@@ -70,6 +72,7 @@ public class OrderDeliveryService implements IOrderDeliveryRepository {
             //đổi trạng thái đơn hàng và đơn vị vận chuyển
             OrderDTO orderDto = orderService.getById(dto.getOrderId());
             Order o = new Order(orderDto);
+            o.setShippingTime(new Date());
             o.setDelivery(deliveryRepository.findById(dto.getDeliveryId()).orElse(null));//đơn vị vận chuyển
             o.setOrderStatus(orderStatusRepository.findById(3).orElse(null)); //trạng thái đơn hàng
             o.setOrderType(orderTypeRepository.findById(orderDto.getOrderTypeDTO().getId()).orElse(null));// kiểu đơn

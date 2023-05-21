@@ -85,16 +85,11 @@ public class StockService implements IStockService {
 
     @Override
     public boolean changeQuantityStockComplete(StockCreateDTO dto) {
-            try {
                 dto.getStockDetailDTO().forEach(var ->{
                     ProductDetail pd = productDetailRepository.findById(var.getProductDetailDTO().getId()).orElse(null);
                     productService.handleWhenCreateStock(var.getQuantity(), pd);
                 });
                 return true;
-            }catch (Exception e) {
-                return false;
-            }
-
     }
 
     public void createStockDetail(@RequestBody StockCreateDTO stockDTO, Stocks s){

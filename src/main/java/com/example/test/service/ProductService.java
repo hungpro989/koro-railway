@@ -200,11 +200,12 @@ public class ProductService implements IProductService {
     }
     // xử lý số lượng khi: thêm stock ở trạng thái đã hoàn thành
     @Override
-    public void handleWhenCreateStock(Integer quantity, ProductDetail dto) {
+    public boolean handleWhenCreateStock(Integer quantity, ProductDetail dto) {
         ProductDetail pd = new ProductDetail(dto);
         pd.setTotalQuantity(pd.getTotalQuantity()+quantity);
         pd.setValidQuantity(pd.getValidQuantity()+quantity);
         productDetailRepository.save(pd);
+        return true;
     }
     // xử lý số lượng khi: huỷ stock ở trạng thái hoàn thành
     @Override

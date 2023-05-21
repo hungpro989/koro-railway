@@ -125,6 +125,7 @@ public class OrderController {
     @GetMapping("/refund-order/{id}")
     public ResponseEntity<ResponseObject> updateOrderStatusAndReFundProductDetail(@PathVariable Integer id){
         if(orderService.updateOrderStatusAndReFundProductDetail(id)){
+            messagingTemplate.convertAndSend("/topic/orders", id);
             return ResponseEntity.ok().body(new ResponseObject("success", "Hoàn đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Hoàn đơn hàng thất bại", null));
@@ -258,6 +259,7 @@ public class OrderController {
     @GetMapping("/scan-tracking-order-print-bill/{billCode}")
     public ResponseEntity<ResponseObject> scanTrackingOrderPrintBill(@PathVariable String billCode){
         if(orderService.scanTrackingOrderAndChangeQuantityHold(billCode)){
+            messagingTemplate.convertAndSend("/topic/orders", "create");
             return ResponseEntity.ok().body(new ResponseObject("success", "Tracking và đổi trạng thái đơn hàng thành công", null));
         }
         return ResponseEntity.ok().body(new ResponseObject("success", "Tracking và đổi trạng thái đơn hàng thất bại", null));
