@@ -214,8 +214,7 @@ public class OrderController {
             start = toDay + " 00:00:00";
             end = toDay+" 23:59:59";
         }
-        System.out.println(start);
-        System.out.println(end);
+
         List<OrderDTO> listDto = orderService.getAllByCondition(employeeId, creatorId, businessId, deliveryId, orderStatusId, orderTypeId, start, end);
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("orderDto");
