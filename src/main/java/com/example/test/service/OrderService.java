@@ -515,14 +515,16 @@ public class OrderService implements IOrderService {
 
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
-            OrderDelivery checkOrderDelivery = orderDeliveryRepository.findOrderDeliveryByCodeDelivery(jsonContext.read("$.id"));
-            if (partner.isJsonObject() && !partner.isJsonNull() && checkOrderDelivery==null) {
+            if (partner.isJsonObject() && !partner.isJsonNull()) {
+                if(orderDeliveryRepository.findOrderDeliveryByCodeDelivery(jsonContext.read("$.partner.partner_name"))==null){
                     OrderDelivery orderDelivery = new OrderDelivery();
                     orderDelivery.setOrder(o);
                     orderDelivery.setStatus(true);
                     orderDelivery.setDelivery(new Delivery(deliveryService.findByName(jsonContext.read("$.partner.partner_name"))));
                     orderDelivery.setCodeDelivery(jsonContext.read("$.partner.extend_code"));
                     orderDeliveryRepository.save(orderDelivery);
+                }
+
             }
         }else if(event_type.equals("orders") && orderDTO!=null) {
             System.out.println("ok");
