@@ -55,17 +55,17 @@ public class OrderService implements IOrderService {
     @Autowired
     OrderDetailService orderDetailService;
     @Autowired
-    private ProductDetailRepository productDetailRepository;
+     ProductDetailRepository productDetailRepository;
     @Autowired
-    private ProductDetailService productDetailService;
+     ProductDetailService productDetailService;
     @Autowired
-    private ProductService productService;
+     ProductService productService;
     @Autowired
     CustomerRepository customerRepository;
     @Autowired
-    private TagRepository tagRepository;
+     TagRepository tagRepository;
     @Autowired
-    private OrderDetailRepository orderDetailRepository;
+     OrderDetailRepository orderDetailRepository;
 
     @Override
     public List<OrderDTO> getAll() {
@@ -348,9 +348,10 @@ public class OrderService implements IOrderService {
         String event_type = jsonContext.read("$.event_type");
         String billCode = jsonContext.read("$.id");
         OrderDTO orderDTO = getOrderByBillCode(billCode);//check billCode đã tồn tại hay chưa và loại webhook
-//        System.out.println(orderDTO);
+        System.out.println(billCode);
+        System.out.println(orderDTO);
 
-        if (event_type.equals("create") && orderDTO==null) {
+        if (orderDTO==null) {
             //xử lý customer
             Customer customer = new Customer();
             if (customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number")) == null) {
@@ -422,16 +423,16 @@ public class OrderService implements IOrderService {
             o.setCustomer(customer);
             orderRepository.save(o);
             createProductDetailByPosCake(orderPosCake, o);
-        } else if (event_type.equals("update") && orderDTO!=null) {
+        } else if (orderDTO!=null) {
             //cập nhật customer của đơn cần update
             Customer customer = new Customer();
-            customer=customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number"));
-            customer.setFullName(jsonContext.read("$.shipping_address.full_name")!=null?jsonContext.read("$.shipping_address.full_name"):customer.getFullName());
-            customer.setPhone(jsonContext.read("$.shipping_address.phone_number")!=null?jsonContext.read("$.shipping_address.phone_number"):customer.getPhone());
-            customer.setAddress(jsonContext.read("$.shipping_address.address")!=null?jsonContext.read("$.shipping_address.address"):customer.getAddress());
-            customer.setWard(jsonContext.read("$.shipping_address.commnue_name")!=null?jsonContext.read("$.shipping_address.commnue_name"):customer.getWard());
-            customer.setDistrict(jsonContext.read("$.shipping_address.district_name")!=null?jsonContext.read("$.shipping_address.district_name"):customer.getDistrict());
-            customer.setProvince(jsonContext.read("$.shipping_address.province_name")!=null?jsonContext.read("$.shipping_address.province_name"):customer.getProvince());
+            customer = customerRepository.findCustomerByPhone(jsonContext.read("$.shipping_address.phone_number"));
+            customer.setFullName(jsonContext.read("$.shipping_address.full_name") != null ?jsonContext.read("$.shipping_address.full_name") : customer.getFullName());
+            customer.setPhone(jsonContext.read("$.shipping_address.phone_number") != null ?jsonContext.read("$.shipping_address.phone_number") : customer.getPhone());
+            customer.setAddress(jsonContext.read("$.shipping_address.address") != null ?jsonContext.read("$.shipping_address.address") : customer.getAddress());
+            customer.setWard(jsonContext.read("$.shipping_address.commnue_name") != null ?jsonContext.read("$.shipping_address.commnue_name") : customer.getWard());
+            customer.setDistrict(jsonContext.read("$.shipping_address.district_name") != null ?jsonContext.read("$.shipping_address.district_name") : customer.getDistrict());
+            customer.setProvince(jsonContext.read("$.shipping_address.province_name") != null ?jsonContext.read("$.shipping_address.province_name") : customer.getProvince());
 
             if (jsonObject.has("customer")) {
                 JsonObject customerObject = jsonObject.getAsJsonObject("customer");
@@ -448,38 +449,38 @@ public class OrderService implements IOrderService {
             Integer productMoney = jsonContext.read("$.total_price");
             Integer paid = jsonContext.read("$.transfer_money");
             Integer discount = jsonContext.read("$.total_discount");
-            Integer totalMoney = productMoney+shipping_fee-discount;
+            Integer totalMoney = productMoney + shipping_fee - discount;
             Integer totalAmount = jsonContext.read("$.cod");
             Order o = new Order(orderDTO);
             //xử lý order status + delivery
 //            String partner = jsonContext.read("$.partner");
             JsonElement partner = jsonObject.get("partner");
-            if(partner.isJsonObject() && !partner.isJsonNull()){
+            if (partner.isJsonObject() && !partner.isJsonNull()) {
                 JsonObject partnerObject = jsonObject.getAsJsonObject("partner");
                 String partnerStatus = jsonContext.read("$.partner.partner_status");
                 //status
-                if(partnerStatus!=null){
+                if (partnerStatus != null) {
                     Integer orderStatusId = handleChangeOrderStatus(jsonContext.read("$.partner.partner_status"));
                     OrderStatusDTO orderStatusDTO = orderStatusService.getById(orderStatusId);
-                    OrderStatus orderStatus= new OrderStatus(orderStatusDTO);
+                    OrderStatus orderStatus = new OrderStatus(orderStatusDTO);
                     o.setOrderStatus(orderStatus); //trạng thái đơn hàng
-                }else{
-                    OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(3));
+                } else {
+                    OrderStatus orderStatus = new OrderStatus(orderStatusService.getById(3));
                     o.setOrderStatus(orderStatus);
                 }
                 //xử lý delivery
-                if(partnerObject.has("partner_name")){
+                if (partnerObject.has("partner_name")) {
                     String partnerName = jsonContext.read("$.partner.partner_name");
                     DeliveryDTO deliveryDTO = deliveryService.findByName(partnerName);
-                    Delivery delivery= new Delivery(deliveryDTO);
+                    Delivery delivery = new Delivery(deliveryDTO);
                     o.setDelivery(delivery); //đơn vị vận chuyển
                 }
-            }else{
+            } else {
                 //xử lý status order khi ko tìm thấy part_name
-                OrderStatus orderStatus= new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
+                OrderStatus orderStatus = new OrderStatus(orderStatusService.getById(orderDTO.getOrderStatusDTO().getId()));
                 o.setOrderStatus(orderStatus);
                 //xử lý delivery khi ko tìm thấy part_name
-                Delivery delivery= new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
+                Delivery delivery = new Delivery(deliveryService.getById(orderDTO.getDeliveryDTO().getId()));
                 o.setDelivery(delivery);
             }
             User user = new User(userService.getById(1));
@@ -514,14 +515,17 @@ public class OrderService implements IOrderService {
 
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
-            if(partner.isJsonObject() && !partner.isJsonNull()){
-                OrderDelivery orderDelivery = new OrderDelivery();
-                orderDelivery.setOrder(o);
-                orderDelivery.setStatus(true);
-                orderDelivery.setDelivery(new Delivery(deliveryService.findByName(jsonContext.read("$.partner.partner_name"))));
-                orderDelivery.setCodeDelivery(jsonContext.read("$.partner.extend_code"));
-                orderDeliveryRepository.save(orderDelivery);
+            OrderDelivery checkOrderDelivery = orderDeliveryRepository.findOrderDeliveryByCodeDelivery(jsonContext.read("$.id"));
+            if (partner.isJsonObject() && !partner.isJsonNull() && checkOrderDelivery==null) {
+                    OrderDelivery orderDelivery = new OrderDelivery();
+                    orderDelivery.setOrder(o);
+                    orderDelivery.setStatus(true);
+                    orderDelivery.setDelivery(new Delivery(deliveryService.findByName(jsonContext.read("$.partner.partner_name"))));
+                    orderDelivery.setCodeDelivery(jsonContext.read("$.partner.extend_code"));
+                    orderDeliveryRepository.save(orderDelivery);
             }
+        }else if(event_type.equals("orders") && orderDTO!=null) {
+            System.out.println("ok");
         }else{
             System.out.println("NG");
         }
@@ -562,6 +566,8 @@ public class OrderService implements IOrderService {
                 JsonObject itemObject = itemElement.getAsJsonObject();
                 Integer quantity = itemObject.get("quantity").getAsInt();
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
+                System.out.println(variationInfoObject);
+
                 String displayId = variationInfoObject.get("display_id").getAsString();
                 Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
