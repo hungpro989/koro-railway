@@ -516,7 +516,7 @@ public class OrderService implements IOrderService {
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
             if (partner.isJsonObject() && !partner.isJsonNull()) {
-                if(orderDeliveryRepository.findOrderDeliveryByCodeDelivery(jsonContext.read("$.partner.partner_name"))==null){
+                if(orderDeliveryRepository.findOrderDeliveryByCodeDelivery(jsonContext.read("$.partner.extend_code"))==null){
                     OrderDelivery orderDelivery = new OrderDelivery();
                     orderDelivery.setOrder(o);
                     orderDelivery.setStatus(true);
@@ -524,10 +524,7 @@ public class OrderService implements IOrderService {
                     orderDelivery.setCodeDelivery(jsonContext.read("$.partner.extend_code"));
                     orderDeliveryRepository.save(orderDelivery);
                 }
-
             }
-        }else if(event_type.equals("orders") && orderDTO!=null) {
-            System.out.println("ok");
         }else{
             System.out.println("NG");
         }
