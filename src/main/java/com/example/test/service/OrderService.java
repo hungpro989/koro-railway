@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -337,20 +338,14 @@ public class OrderService implements IOrderService {
             return false;
         }
     }
-
-    public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
+public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
         //gson
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
         JsonObject jsonObject = jsonElement.getAsJsonObject();
         //JsonPath
         DocumentContext jsonContext = JsonPath.parse(orderPosCake);
-        String event_type = jsonContext.read("$.event_type");
-        String billCode = jsonContext.read("$.id");
-        OrderDTO orderDTO = getOrderByBillCode(billCode);//check billCode đã tồn tại hay chưa và loại webhook
-        System.out.println(billCode);
-        System.out.println(orderDTO);
-
+        OrderDTO orderDTO = getOrderByBillCode(jsonContext.read("$.id"));//check billCode đã tồn tại hay chưa và loại webhook
         if (orderDTO==null) {
             //xử lý customer
             Customer customer = new Customer();
@@ -453,7 +448,6 @@ public class OrderService implements IOrderService {
             Integer totalAmount = jsonContext.read("$.cod");
             Order o = new Order(orderDTO);
             //xử lý order status + delivery
-//            String partner = jsonContext.read("$.partner");
             JsonElement partner = jsonObject.get("partner");
             if (partner.isJsonObject() && !partner.isJsonNull()) {
                 JsonObject partnerObject = jsonObject.getAsJsonObject("partner");
@@ -495,7 +489,6 @@ public class OrderService implements IOrderService {
             BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
             Business business = new Business(businessDTO);
             o.setBusiness(business); // business
-//            o.setId(orderDTO.getId());
             o.setName(jsonContext.read("$.shipping_address.full_name"));
             o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
             o.setAddress(jsonContext.read("$.shipping_address.address"));
@@ -565,8 +558,6 @@ public class OrderService implements IOrderService {
                 JsonObject itemObject = itemElement.getAsJsonObject();
                 Integer quantity = itemObject.get("quantity").getAsInt();
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
-                System.out.println(variationInfoObject);
-
                 String displayId = variationInfoObject.get("display_id").getAsString();
                 Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
