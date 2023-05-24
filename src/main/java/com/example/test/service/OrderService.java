@@ -561,16 +561,29 @@ public void createOrderByPosCake(String orderPosCake) throws JsonProcessingExcep
                 String displayId = variationInfoObject.get("display_id").getAsString();
                 Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
+
                 ProductDetail pd = new ProductDetail(dto);
-                if(pd!=null){
+                System.out.println(pd);
+                if(pd != null){
                     OrderDetailDTO orderDetailDTO = orderDetailService.findbyOrderIdAndProductDetailId(pd.getId(),o.getId());
-                    OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
-                    orderDetail.setProductDetail(pd);
-                    orderDetail.setOrders(o);
-                    orderDetail.setQuantity(quantity);
-                    orderDetail.setPrice(Float.valueOf(retailPrice));
-                    orderDetail.setDiscount(Float.valueOf(0));
-                    orderDetailService.save(orderDetail);
+                    if(orderDetailDTO !=null){
+                        OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
+                        orderDetail.setProductDetail(pd);
+                        orderDetail.setOrders(o);
+                        orderDetail.setQuantity(quantity);
+                        orderDetail.setPrice(Float.valueOf(retailPrice));
+                        orderDetail.setDiscount(Float.valueOf(0));
+                        orderDetailService.save(orderDetail);
+                    }else{
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setProductDetail(pd);
+                        orderDetail.setOrders(o);
+                        orderDetail.setQuantity(quantity);
+                        orderDetail.setPrice(Float.valueOf(retailPrice));
+                        orderDetail.setDiscount(Float.valueOf(0));
+                        orderDetailService.save(orderDetail);
+                    }
+
                 }
             }
         }

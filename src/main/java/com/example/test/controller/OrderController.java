@@ -35,46 +35,43 @@ public class OrderController {
     @Autowired
     ProductService productService;
     private final SimpMessagingTemplate messagingTemplate;
+
     public OrderController(SimpMessagingTemplate messagingTemplate) {
         this.messagingTemplate = messagingTemplate;
     }
+
     //get all
     @GetMapping
-    public ResponseEntity<ResponseObject> getAll(){
+    public ResponseEntity<ResponseObject> getAll() {
         List<OrderDTO> listDto = orderService.getAll();
-        if(!listDto.isEmpty()){
+        if (!listDto.isEmpty()) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thành công", listDto));
         }
         return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thất bại, rỗng", listDto));
     }
-//get by business
+
+    //get by business
     @GetMapping("/business/{id}")
-    public ResponseEntity<ResponseObject> getOrderByBusinessId(@PathVariable  Integer id){
+    public ResponseEntity<ResponseObject> getOrderByBusinessId(@PathVariable Integer id) {
         List<OrderDTO> listDto = orderService.getAllByBusinessId(id);
-        if(!listDto.isEmpty()){
+        if (!listDto.isEmpty()) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thành công", listDto));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Lấy danh sách đơn hàng thất bại", listDto));
     }
-//get by id
+
+    //get by id
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getById(@PathVariable Integer id){
-        if(orderService.getById(id)!=null){
+    public ResponseEntity<ResponseObject> getById(@PathVariable Integer id) {
+        if (orderService.getById(id) != null) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy đơn hàng thành công", orderService.getById(id)));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy đơn hàng có id như trên", null));
     }
+
     //get by multiple condition
     @GetMapping("condition")
-    public ResponseEntity<ResponseObject> getAllByCondition(
-            @RequestParam(value = "employeeId", required = false) Integer employeeId,
-            @RequestParam(value = "creatorId", required = false) Integer creatorId,
-            @RequestParam(value = "businessId", required = false) Integer businessId,
-            @RequestParam(value = "deliveryId", required = false) Integer deliveryId,
-            @RequestParam(value = "orderStatusId", required = false) Integer orderStatusId,
-            @RequestParam(value = "orderTypeId", required = false) Integer orderTypeId,
-            @RequestParam(value = "orderTimeStart", required = false) String orderTimeStart,
-            @RequestParam(value = "orderTimeEnd", required = false) String orderTimeEnd
+    public ResponseEntity<ResponseObject> getAllByCondition(@RequestParam(value = "employeeId", required = false) Integer employeeId, @RequestParam(value = "creatorId", required = false) Integer creatorId, @RequestParam(value = "businessId", required = false) Integer businessId, @RequestParam(value = "deliveryId", required = false) Integer deliveryId, @RequestParam(value = "orderStatusId", required = false) Integer orderStatusId, @RequestParam(value = "orderTypeId", required = false) Integer orderTypeId, @RequestParam(value = "orderTimeStart", required = false) String orderTimeStart, @RequestParam(value = "orderTimeEnd", required = false) String orderTimeEnd
 
     ) {
         LocalDate toDay = LocalDate.now(ZoneId.of("GMT+07:00"));
@@ -83,9 +80,9 @@ public class OrderController {
         if (orderTimeStart != null && orderTimeEnd != null) {
             start = orderTimeStart + " 00:00:00";
             end = orderTimeEnd + " 23:59:59";
-        }else if(orderTimeStart != null && orderTimeEnd == null){
+        } else if (orderTimeStart != null && orderTimeEnd == null) {
             start = orderTimeStart + " 00:00:00";
-            end = toDay+" 23:59:59";
+            end = toDay + " 23:59:59";
         }
 
         List<OrderDTO> listDto = orderService.getAllByCondition(employeeId, creatorId, businessId, deliveryId, orderStatusId, orderTypeId, start, end);
@@ -94,112 +91,117 @@ public class OrderController {
         }
         return ResponseEntity.ok().body(new ResponseObject("success", "Danh sách đơn hàng rỗng", null));
     }
+
     @PostMapping
-    public ResponseEntity<ResponseObject> createOrder(@RequestBody OrderCreateDTO orderCreateDTO){
-        if(orderService.save(orderCreateDTO)){
+    public ResponseEntity<ResponseObject> createOrder(@RequestBody OrderCreateDTO orderCreateDTO) {
+        if (orderService.save(orderCreateDTO)) {
 
             messagingTemplate.convertAndSend("/topic/orders", "create");
             return ResponseEntity.ok().body(new ResponseObject("success", "Tạo đơn hàng thành công", orderCreateDTO));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Tạo đơn hàng thất bại", null));
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> updateOrder(@RequestBody OrderCreateDTO orderDTO, @PathVariable Integer id){
-        if(orderService.getById(id)==null){
+    public ResponseEntity<ResponseObject> updateOrder(@RequestBody OrderCreateDTO orderDTO, @PathVariable Integer id) {
+        if (orderService.getById(id) == null) {
             return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy Id đơn hàng tương ứng", null));
         }
         Boolean check = orderService.save(orderDTO);
-        if(check){
+        if (check) {
             messagingTemplate.convertAndSend("/topic/orders", orderDTO.getId());
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật đơn hàng thất bại", orderDTO));
     }
+
     @GetMapping("/{id}/{statusId}")
-    public ResponseEntity<ResponseObject> updateOrderStatus(@PathVariable Integer id, @PathVariable Integer statusId){
-        if(orderService.updateStatus(id, statusId)){
+    public ResponseEntity<ResponseObject> updateOrderStatus(@PathVariable Integer id, @PathVariable Integer statusId) {
+        if (orderService.updateStatus(id, statusId)) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật trạng thái đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật trạng thái đơn hàng thất bại", null));
     }
+
     @GetMapping("/refund-order/{id}")
-    public ResponseEntity<ResponseObject> updateOrderStatusAndReFundProductDetail(@PathVariable Integer id){
-        if(orderService.updateOrderStatusAndReFundProductDetail(id)){
+    public ResponseEntity<ResponseObject> updateOrderStatusAndReFundProductDetail(@PathVariable Integer id) {
+        if (orderService.updateOrderStatusAndReFundProductDetail(id)) {
             messagingTemplate.convertAndSend("/topic/orders", id);
             return ResponseEntity.ok().body(new ResponseObject("success", "Hoàn đơn hàng thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Hoàn đơn hàng thất bại", null));
     }
+
     @GetMapping("/status/{statusId}")
-    public ResponseEntity<ResponseObject> getAll(@PathVariable Integer statusId){
+    public ResponseEntity<ResponseObject> getAll(@PathVariable Integer statusId) {
         List<OrderDTO> listDto = orderService.getOrderByStatus(statusId);
-        if(!listDto.isEmpty()){
+        if (!listDto.isEmpty()) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thành công", listDto));
         }
         return ResponseEntity.ok().body(new ResponseObject("success", "Lấy danh sách đơn hàng thất bại, rỗng", listDto));
     }
-    @PostMapping("/printbill/{id}/{deliveryId}")
-    public ResponseEntity<ResponseObject> printBill(@PathVariable Integer id, @PathVariable Integer deliveryId){
 
-        if(orderService.printBill(id, deliveryId)!=null){
+    @PostMapping("/printbill/{id}/{deliveryId}")
+    public ResponseEntity<ResponseObject> printBill(@PathVariable Integer id, @PathVariable Integer deliveryId) {
+
+        if (orderService.printBill(id, deliveryId) != null) {
             return ResponseEntity.ok().body(new ResponseObject("success", "In đơn hàng thành công", orderService.printBill(id, deliveryId)));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "In đơn hàng thất bại", null));
     }
+
     @PostMapping("/printMultipleBill")
-    public ResponseEntity<ResponseObject> printMultipleBill(@RequestBody OrderPrintMultipleDTO list){
+    public ResponseEntity<ResponseObject> printMultipleBill(@RequestBody OrderPrintMultipleDTO list) {
         return ResponseEntity.ok().body(new ResponseObject("test", "Testtttt...", orderService.printMultipleBill(list)));
     }
+
     @DeleteMapping("/order-detail/{id}")
-    public ResponseEntity<ResponseObject> deleteOrderDetail(@PathVariable Integer id){
-        if(orderDetailService.deleteById(id)){
+    public ResponseEntity<ResponseObject> deleteOrderDetail(@PathVariable Integer id) {
+        if (orderDetailService.deleteById(id)) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Xoá product detail thành công", null));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Xoá product detail thất bại", null));
     }
+
     //vừa lưu order delivery vừa cập nhật trạng thái order
     @PutMapping("/save-data-delivery")
-    public ResponseEntity<ResponseObject>  createDateDelivery(@RequestBody OrderDeliveryDTO orderDeliveryDTO){
-            if(orderDeliveryService.save(orderDeliveryDTO)){
-                messagingTemplate.convertAndSend("/topic/orders", orderDeliveryDTO.getOrderId());
-                return ResponseEntity.ok().body(new ResponseObject("success", "Lưu order delivery thành công", orderDeliveryDTO.getCodeDelivery()));
-            }
-            return ResponseEntity.badRequest().body(new ResponseObject("error", "Lưu order delivery thất bại", null));
+    public ResponseEntity<ResponseObject> createDateDelivery(@RequestBody OrderDeliveryDTO orderDeliveryDTO) {
+        if (orderDeliveryService.save(orderDeliveryDTO)) {
+            messagingTemplate.convertAndSend("/topic/orders", orderDeliveryDTO.getOrderId());
+            return ResponseEntity.ok().body(new ResponseObject("success", "Lưu order delivery thành công", orderDeliveryDTO.getCodeDelivery()));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Lưu order delivery thất bại", null));
     }
+
     @GetMapping("/bill-code/{billCode}")
-    public ResponseEntity<ResponseObject> getByBillCode(@PathVariable String billCode){
+    public ResponseEntity<ResponseObject> getByBillCode(@PathVariable String billCode) {
         OrderDTO dto = orderService.getOrderByBillCode(billCode);
-        if(dto!=null){
+        if (dto != null) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy đơn hàng thành công by bill code", dto));
         }
         return ResponseEntity.status(400).body(new ResponseObject("error", "Không tìm thấy đơn hàng có bill code như trên", null));
     }
+
     @GetMapping("/search-order-phone-bill-code/{phone}/{billCode}")
-    public ResponseEntity<ResponseObject> getByBillCode(@PathVariable String phone,@PathVariable String billCode ){
-        List<OrderDTO> dto = orderService.findOrderByPhoneOrBillCode(phone,billCode);
-        if(dto!=null){
+    public ResponseEntity<ResponseObject> getByBillCode(@PathVariable String phone, @PathVariable String billCode) {
+        List<OrderDTO> dto = orderService.findOrderByPhoneOrBillCode(phone, billCode);
+        if (dto != null) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Lấy đơn hàng thành công by bill code", dto));
         }
         return ResponseEntity.status(400).body(new ResponseObject("error", "Không tìm thấy đơn hàng có bill code như trên", null));
     }
+
     @GetMapping("/update-delivery/{orderId}/{deliveryId}")
-    public ResponseEntity<ResponseObject> updateOrderDelivery(@PathVariable Integer orderId, @PathVariable Integer deliveryId){
+    public ResponseEntity<ResponseObject> updateOrderDelivery(@PathVariable Integer orderId, @PathVariable Integer deliveryId) {
         boolean check = orderService.updateDelivery(orderId, deliveryId);
-        if(check == true){
+        if (check == true) {
             return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật đơn vị vận chuyển thành công", check));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật đơn vị vận chuyển thất bại", null));
     }
+
     @GetMapping("/export")
-    public void exportToExcel(HttpServletResponse response,
-                              @RequestParam(value = "employeeId", required = false) Integer employeeId,
-                              @RequestParam(value = "creatorId", required = false) Integer creatorId,
-                              @RequestParam(value = "businessId", required = false) Integer businessId,
-                              @RequestParam(value = "deliveryId", required = false) Integer deliveryId,
-                              @RequestParam(value = "orderStatusId", required = false) Integer orderStatusId,
-                              @RequestParam(value = "orderTypeId", required = false) Integer orderTypeId,
-                              @RequestParam(value = "orderTimeStart", required = false) String orderTimeStart,
-                              @RequestParam(value = "orderTimeEnd", required = false) String orderTimeEnd) throws IOException {
+    public void exportToExcel(HttpServletResponse response, @RequestParam(value = "employeeId", required = false) Integer employeeId, @RequestParam(value = "creatorId", required = false) Integer creatorId, @RequestParam(value = "businessId", required = false) Integer businessId, @RequestParam(value = "deliveryId", required = false) Integer deliveryId, @RequestParam(value = "orderStatusId", required = false) Integer orderStatusId, @RequestParam(value = "orderTypeId", required = false) Integer orderTypeId, @RequestParam(value = "orderTimeStart", required = false) String orderTimeStart, @RequestParam(value = "orderTimeEnd", required = false) String orderTimeEnd) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition", "attachment; filename=Orders.xlsx");
         LocalDate toDay = LocalDate.now(ZoneId.of("GMT+07:00"));
@@ -208,12 +210,12 @@ public class OrderController {
         if (orderTimeStart != null && orderTimeEnd != null) {
             start = orderTimeStart + " 00:00:00";
             end = orderTimeEnd + " 23:59:59";
-        }else if(orderTimeStart != null && orderTimeEnd == null){
+        } else if (orderTimeStart != null && orderTimeEnd == null) {
             start = orderTimeStart + " 00:00:00";
-            end = toDay+" 23:59:59";
-        }else{
+            end = toDay + " 23:59:59";
+        } else {
             start = toDay + " 00:00:00";
-            end = toDay+" 23:59:59";
+            end = toDay + " 23:59:59";
         }
 
         List<OrderDTO> listDto = orderService.getAllByCondition(employeeId, creatorId, businessId, deliveryId, orderStatusId, orderTypeId, start, end);
@@ -234,7 +236,7 @@ public class OrderController {
         int rowNum = 1;
         for (OrderDTO orderDto : listDto) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(rowNum-1);
+            row.createCell(0).setCellValue(rowNum - 1);
             row.createCell(1).setCellValue(orderDto.getBillCode());
             row.createCell(2).setCellValue(orderDto.getOrderStatusDTO().getName());
             row.createCell(3).setCellValue(orderDto.getOrderTypeDTO().getName());
@@ -256,9 +258,10 @@ public class OrderController {
         workbook.write(response.getOutputStream());
         workbook.close();
     }
+
     @GetMapping("/scan-tracking-order-print-bill/{billCode}")
-    public ResponseEntity<ResponseObject> scanTrackingOrderPrintBill(@PathVariable String billCode){
-        if(orderService.scanTrackingOrderAndChangeQuantityHold(billCode)){
+    public ResponseEntity<ResponseObject> scanTrackingOrderPrintBill(@PathVariable String billCode) {
+        if (orderService.scanTrackingOrderAndChangeQuantityHold(billCode)) {
             messagingTemplate.convertAndSend("/topic/orders", "create");
             return ResponseEntity.ok().body(new ResponseObject("success", "Tracking và đổi trạng thái đơn hàng thành công", null));
         }
