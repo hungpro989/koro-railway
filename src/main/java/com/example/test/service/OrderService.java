@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.sql.Timestamp;
@@ -26,6 +27,7 @@ import java.util.List;
 import static com.example.test.common.common.generateString;
 
 @Service
+@Transactional
 public class OrderService implements IOrderService {
     @Autowired
     OrderDeliveryRepository orderDeliveryRepository;
@@ -338,6 +340,7 @@ public class OrderService implements IOrderService {
             return false;
         }
     }
+
     public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
         //gson
         Gson gson = new Gson();
@@ -548,12 +551,14 @@ public class OrderService implements IOrderService {
             }
         }
     }
+
     public void updateProductDetailByPosCake(String orderPosCake, Order o){
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
         if (jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             JsonArray itemsArray = jsonObject.getAsJsonArray("items");
+            orderDetailRepository.deleteOrderDetailByOrdersId(o.getId());
             for (JsonElement itemElement : itemsArray) {
 
                 JsonObject itemObject = itemElement.getAsJsonObject();
@@ -585,7 +590,7 @@ public class OrderService implements IOrderService {
 //                    }
 //
 //                }
-                if(orderDetailRepository.deleteOrderDetailByOrdersId(o.getId())){
+
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setProductDetail(pd);
                     orderDetail.setOrders(o);
@@ -593,7 +598,7 @@ public class OrderService implements IOrderService {
                     orderDetail.setPrice(Float.valueOf(retailPrice));
                     orderDetail.setDiscount(Float.valueOf(0));
                     orderDetailService.save(orderDetail);
-                }
+
             }
         }
     }
