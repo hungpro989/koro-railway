@@ -338,7 +338,7 @@ public class OrderService implements IOrderService {
             return false;
         }
     }
-public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
+    public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
         //gson
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
@@ -555,6 +555,7 @@ public void createOrderByPosCake(String orderPosCake) throws JsonProcessingExcep
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             JsonArray itemsArray = jsonObject.getAsJsonArray("items");
             for (JsonElement itemElement : itemsArray) {
+
                 JsonObject itemObject = itemElement.getAsJsonObject();
                 Integer quantity = itemObject.get("quantity").getAsInt();
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
@@ -563,27 +564,35 @@ public void createOrderByPosCake(String orderPosCake) throws JsonProcessingExcep
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
 
                 ProductDetail pd = new ProductDetail(dto);
-                System.out.println(pd);
-                if(pd != null){
-                    OrderDetailDTO orderDetailDTO = orderDetailService.findbyOrderIdAndProductDetailId(pd.getId(),o.getId());
-                    if(orderDetailDTO !=null){
-                        OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
-                        orderDetail.setProductDetail(pd);
-                        orderDetail.setOrders(o);
-                        orderDetail.setQuantity(quantity);
-                        orderDetail.setPrice(Float.valueOf(retailPrice));
-                        orderDetail.setDiscount(Float.valueOf(0));
-                        orderDetailService.save(orderDetail);
-                    }else{
-                        OrderDetail orderDetail = new OrderDetail();
-                        orderDetail.setProductDetail(pd);
-                        orderDetail.setOrders(o);
-                        orderDetail.setQuantity(quantity);
-                        orderDetail.setPrice(Float.valueOf(retailPrice));
-                        orderDetail.setDiscount(Float.valueOf(0));
-                        orderDetailService.save(orderDetail);
-                    }
-
+//                if(pd != null){
+//                    OrderDetailDTO orderDetailDTO = orderDetailService.findbyOrderIdAndProductDetailId(pd.getId(),o.getId());
+//                    if(orderDetailDTO !=null){
+//                        OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
+//                        orderDetail.setProductDetail(pd);
+//                        orderDetail.setOrders(o);
+//                        orderDetail.setQuantity(quantity);
+//                        orderDetail.setPrice(Float.valueOf(retailPrice));
+//                        orderDetail.setDiscount(Float.valueOf(0));
+//                        orderDetailService.save(orderDetail);
+//                    }else{
+//                        OrderDetail orderDetail = new OrderDetail();
+//                        orderDetail.setProductDetail(pd);
+//                        orderDetail.setOrders(o);
+//                        orderDetail.setQuantity(quantity);
+//                        orderDetail.setPrice(Float.valueOf(retailPrice));
+//                        orderDetail.setDiscount(Float.valueOf(0));
+//                        orderDetailService.save(orderDetail);
+//                    }
+//
+//                }
+                if(orderDetailRepository.deleteOrderDetailByOrdersId(o.getId())){
+                    OrderDetail orderDetail = new OrderDetail();
+                    orderDetail.setProductDetail(pd);
+                    orderDetail.setOrders(o);
+                    orderDetail.setQuantity(quantity);
+                    orderDetail.setPrice(Float.valueOf(retailPrice));
+                    orderDetail.setDiscount(Float.valueOf(0));
+                    orderDetailService.save(orderDetail);
                 }
             }
         }
