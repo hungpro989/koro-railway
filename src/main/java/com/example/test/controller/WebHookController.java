@@ -1,6 +1,7 @@
 package com.example.test.controller;
 
 import com.example.test.service.OrderService;
+import com.example.test.service.TestGhnService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.text.ParseException;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/webhook/poscake")
+@RequestMapping("/webhook")
 @Slf4j
 public class WebHookController {
 
@@ -21,9 +22,18 @@ public class WebHookController {
     }
     @Autowired
     OrderService orderService;
-    @PostMapping()
+    @Autowired
+    private TestGhnService testGhnService;
+    @PostMapping("/poscake")
     public void getposcake(@RequestBody String string) throws JsonProcessingException, ParseException {
         orderService.createOrderByPosCake(string);
         messagingTemplate.convertAndSend("/topic/orders", "create");
+        log.info(string);
+    }
+
+    @PostMapping("/ghn")
+    public void ghn(@RequestBody String string) throws JsonProcessingException, ParseException {
+        testGhnService.save(string);
+        log.info(string);
     }
 }

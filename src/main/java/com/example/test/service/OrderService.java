@@ -569,28 +569,6 @@ public class OrderService implements IOrderService {
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
 
                 ProductDetail pd = new ProductDetail(dto);
-//                if(pd != null){
-//                    OrderDetailDTO orderDetailDTO = orderDetailService.findbyOrderIdAndProductDetailId(pd.getId(),o.getId());
-//                    if(orderDetailDTO !=null){
-//                        OrderDetail orderDetail = new OrderDetail(orderDetailDTO);
-//                        orderDetail.setProductDetail(pd);
-//                        orderDetail.setOrders(o);
-//                        orderDetail.setQuantity(quantity);
-//                        orderDetail.setPrice(Float.valueOf(retailPrice));
-//                        orderDetail.setDiscount(Float.valueOf(0));
-//                        orderDetailService.save(orderDetail);
-//                    }else{
-//                        OrderDetail orderDetail = new OrderDetail();
-//                        orderDetail.setProductDetail(pd);
-//                        orderDetail.setOrders(o);
-//                        orderDetail.setQuantity(quantity);
-//                        orderDetail.setPrice(Float.valueOf(retailPrice));
-//                        orderDetail.setDiscount(Float.valueOf(0));
-//                        orderDetailService.save(orderDetail);
-//                    }
-//
-//                }
-
                     OrderDetail orderDetail = new OrderDetail();
                     orderDetail.setProductDetail(pd);
                     orderDetail.setOrders(o);
@@ -638,4 +616,6 @@ public class OrderService implements IOrderService {
 
         return orderStatusId;
     }
+
+
 }

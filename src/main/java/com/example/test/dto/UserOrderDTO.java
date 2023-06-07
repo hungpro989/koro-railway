@@ -21,6 +21,13 @@ public class UserOrderDTO {
     private Date birthday;
     private boolean status;
 
+    private boolean sex;
+    private String bankAccount;
+    private String bankName;
+    private String cccd;
+    private Date createdAt;
+    private Date updatedAt;
+
     public UserOrderDTO(User b){
         this.id=b.getId();
         this.fullName=b.getFullName();
@@ -31,5 +38,11 @@ public class UserOrderDTO {
         this.description=b.getDescription();
         this.birthday=b.getBirthday();
         this.status=b.isStatus();
+        this.sex= b.isSex();
+        this.bankAccount=b.getBankAccount();
+        this.bankName = b.getBankName();
+        this.cccd = b.getCccd();
+        this.createdAt=b.getCreatedAt();
+        this.updatedAt=b.getUpdatedAt();
     }
 }

@@ -5,6 +5,10 @@ import com.example.test.dto.UserOrderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -50,6 +54,16 @@ public class User {
 
     @Column(name = "status")
     private boolean status;
+
+    @Column(name = "sex")
+    private boolean sex;
+    @Column(name = "bank_account")
+    private String bankAccount;
+    @Column(name = "bank_name")
+    private String bankName;
+    @Column(name = "cccd")
+    private String cccd;
+
     //order
     @OneToMany(mappedBy = "user")
     private List<Order> order;
@@ -61,6 +75,19 @@ public class User {
     @ManyToOne()
     @JoinColumn(name = "theme_id", nullable=false)
     private Theme themes;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date updatedAt;
+
     public User(UserDTO dto){
         this.id = dto.getId();
         this.username = dto.getUsername();
@@ -74,6 +101,12 @@ public class User {
         this.description=dto.getDescription();
         this.birthday=dto.getBirthday();
         this.status=dto.isStatus();
+        this.sex= dto.isSex();
+        this.bankAccount=dto.getBankAccount();
+        this.bankName = dto.getBankName();
+        this.cccd = dto.getCccd();
+        this.createdAt=dto.getCreatedAt();
+        this.updatedAt=dto.getUpdatedAt();
     }
 
     public User(UserOrderDTO dto) {
@@ -87,5 +120,11 @@ public class User {
         this.description=dto.getDescription();
         this.birthday=dto.getBirthday();
         this.status=dto.isStatus();
+        this.sex= dto.isSex();
+        this.bankAccount=dto.getBankAccount();
+        this.bankName = dto.getBankName();
+        this.cccd = dto.getCccd();
+        this.createdAt=dto.getCreatedAt();
+        this.updatedAt=dto.getUpdatedAt();
     }
 }
