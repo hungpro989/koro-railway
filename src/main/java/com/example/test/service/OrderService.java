@@ -28,6 +28,7 @@ import static com.example.test.common.common.generateString;
 
 @Service
 @Transactional
+@Slf4j
 public class OrderService implements IOrderService {
     @Autowired
     OrderDeliveryRepository orderDeliveryRepository;
@@ -345,7 +346,7 @@ public class OrderService implements IOrderService {
         //gson
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
         //JsonPath
         DocumentContext jsonContext = JsonPath.parse(orderPosCake);
         OrderDTO orderDTO = getOrderByBillCode(jsonContext.read("$.id"));//check billCode đã tồn tại hay chưa và loại webhook
@@ -616,6 +617,75 @@ public class OrderService implements IOrderService {
 
         return orderStatusId;
     }
+    @Override
+    public void updateProductByWebHookGhn(String string){
+        DocumentContext jsonContext = JsonPath.parse(string);
+        if(jsonContext.read("$.Type").equals("switch_status")){
+            OrderDTO orderDTO = getOrderByBillCode(jsonContext.read("$.ClientOrderCode"));//check billCode đã tồn tại hay chưa và loại webhook
+            if(orderDTO!=null){
+                Integer orderStatusId = handleChangeOrderStatusGhn(jsonContext.read("$.Status"));
+                String CODTransferDate = jsonContext.read("$.CODTransferDate");
+                System.out.println(CODTransferDate);
+                if(orderStatusId==17 && CODTransferDate!=null){
+                    updateStatus(orderDTO.getId(), 6);
+                    System.out.println((String) jsonContext.read("$.Status"));//khi đối soát thì sử dụng lệnh này
+                }else {
+                    System.out.println((String) jsonContext.read("$.Status"));
+                    updateStatus(orderDTO.getId(), orderStatusId); //cập nhật trạng thái
+                }
+            }
+        }
+    }
+    public Integer handleChangeOrderStatusGhn(String partnerStatus){
+        Integer orderStatusId=0;
+        if(partnerStatus.equals("ready_to_pick")){
+            orderStatusId=3;
+        }else if(partnerStatus.equals("picking")){
+            orderStatusId=11;
+        }else if(partnerStatus.equals("cancel")){
+            orderStatusId=10;
+        }else if(partnerStatus.equals("money_collect_picking")){
+            orderStatusId=14;
+        }else if(partnerStatus.equals("picked")){
+            orderStatusId=23;
+        }else if(partnerStatus.equals("storing")){
+            orderStatusId=12;
+        }else if(partnerStatus.equals("transporting")){
+            orderStatusId=21;
+        }else if(partnerStatus.equals("sorting")){
+            orderStatusId=22;
+        }else if(partnerStatus.equals("delivering")){
+            orderStatusId=14;
+        }else if(partnerStatus.equals("money_collect_delivering")){
+            orderStatusId=24;
+        }else if(partnerStatus.equals("delivered")){
+            orderStatusId=17;
+        }else if(partnerStatus.equals("delivery_fail")){
+            orderStatusId=15;
+        }else if(partnerStatus.equals("waiting_to_return")){
+            orderStatusId=25;
+        }else if(partnerStatus.equals("return")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("return_transporting")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("return_sorting")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("returning")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("return_fail")){
+            orderStatusId=7;
+        }else if(partnerStatus.equals("returned")){
+            orderStatusId=8;
+        }else if(partnerStatus.equals("exception")){
+            orderStatusId=26;
+        }else if(partnerStatus.equals("damage")){
+            orderStatusId=27;
+        }else if(partnerStatus.equals("lost")){
+            orderStatusId=28;
+        }else{
+            orderStatusId=19;
+        }
 
-
+        return orderStatusId;
+    }
 }

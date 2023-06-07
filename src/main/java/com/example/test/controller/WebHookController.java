@@ -33,7 +33,7 @@ public class WebHookController {
 
     @PostMapping("/ghn")
     public void ghn(@RequestBody String string) throws JsonProcessingException, ParseException {
-        testGhnService.save(string);
+        orderService.updateProductByWebHookGhn(string);
         log.info(string);
     }
 }
