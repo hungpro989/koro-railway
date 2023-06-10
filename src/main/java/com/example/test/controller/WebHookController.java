@@ -34,6 +34,7 @@ public class WebHookController {
     @PostMapping("/ghn")
     public void ghn(@RequestBody String string) throws JsonProcessingException, ParseException {
         orderService.updateProductByWebHookGhn(string);
+        messagingTemplate.convertAndSend("/topic/orders", "create");
         log.info(string);
     }
 }

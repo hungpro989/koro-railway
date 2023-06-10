@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class UserOrderDTO {
     private Integer id;
+    private String username;
     private String fullName;
     private String address;
     private String phone;
@@ -20,7 +21,6 @@ public class UserOrderDTO {
     private String description;
     private Date birthday;
     private boolean status;
-
     private boolean sex;
     private String bankAccount;
     private String bankName;
@@ -30,6 +30,7 @@ public class UserOrderDTO {
 
     public UserOrderDTO(User b){
         this.id=b.getId();
+        this.username = b.getUsername();
         this.fullName=b.getFullName();
         this.address=b.getAddress();
         this.phone=b.getPhone();

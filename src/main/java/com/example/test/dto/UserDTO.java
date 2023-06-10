@@ -24,7 +24,6 @@ public class UserDTO {
     private String description;
     private Date birthday;
     private boolean status;
-
     private boolean sex;
     private String bankAccount;
     private String bankName;

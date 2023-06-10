@@ -2,7 +2,9 @@ package com.example.test.controller;
 
 import com.example.test.dto.*;
 import com.example.test.models.User;
+import com.example.test.repository.UserRepository;
 import com.example.test.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,7 +16,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/users")
 @CrossOrigin
+@Slf4j
 public class UserController {
+    @Autowired
+    private UserRepository userRepository;
     @Autowired
     UserService userService;
     @GetMapping
@@ -63,21 +68,23 @@ public class UserController {
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject> update(@RequestBody User user, @PathVariable Integer id){
-        UserDTO dto = userService.getById(id);
-        if(dto != null){
+    public ResponseEntity<ResponseObject> update(@RequestBody UserOrderDTO userOrderDto, @PathVariable Integer id){
+        System.out.println(userOrderDto);
+        User user = new User(userOrderDto);
+        System.out.println(user);
+        if(user != null){
             //kiểm tra allEmployee nhưng phone, email là ko trùng ==> cập nhật luôn
             if(!userService.checkExistPhone(user.getPhone()) && !userService.checkExistEmail(user.getEmail())) {
                 if (userService.save(user)) {
-                    return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công", user));
+                    return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công1", user));
                 }
-                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại", null));
+                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại1", null));
                 //kiểm tra empPhone, empEmail trùng với dtoPhone, dtoEmail các trường khác cập nhật => cập nhật luôn
-            }else if(user.getPhone().equalsIgnoreCase(dto.getPhone()) && user.getEmail().equalsIgnoreCase(dto.getEmail())) {
+            }else if(user.getPhone().equalsIgnoreCase(user.getPhone()) && user.getEmail().equalsIgnoreCase(user.getEmail())) {
                 if (userService.save(user)) {
-                    return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công", user));
+                    return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công2", user));
                 }
-                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại", null));
+                return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại2", null));
             //Lỗi sdt, email trùng ==>error
             }else {
                 return ResponseEntity.badRequest().body(new ResponseObject("error", "Sdt hoặc email đã tồn tại", null));
@@ -85,6 +92,7 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Không tìm thấy nhân viên nào với ID này", null));
     }
+
     @GetMapping("/change-theme/{userId}/{themeId}")
     public ResponseEntity<ResponseObject> changeTheme(@PathVariable Integer userId, @PathVariable Integer themeId) {
 

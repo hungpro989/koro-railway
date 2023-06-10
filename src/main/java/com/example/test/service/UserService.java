@@ -63,12 +63,8 @@ public class UserService implements IUserService, UserDetailsService {
 
     @Override
     public boolean save(User entity) {
-        try{
-            userRepository.save(entity);
-            return  true;
-        }catch (Exception e) {
-            return false;
-        }
+        userRepository.save(entity);
+        return  true;
     }
 
     @Override
