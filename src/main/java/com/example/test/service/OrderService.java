@@ -346,7 +346,7 @@ public class OrderService implements IOrderService {
         //gson
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
         //JsonPath
         DocumentContext jsonContext = JsonPath.parse(orderPosCake);
         OrderDTO orderDTO = getOrderByBillCode(jsonContext.read("$.id"));//check billCode đã tồn tại hay chưa và loại webhook
@@ -383,8 +383,23 @@ public class OrderService implements IOrderService {
             Integer shipping_fee = jsonContext.read("$.shipping_fee");
             Integer productMoney = jsonContext.read("$.total_price");
             Integer paid = jsonContext.read("$.transfer_money");
-            Integer discount = jsonContext.read("$.total_discount");
-            Integer totalMoney = productMoney+shipping_fee-discount;
+            Float discount = Float.valueOf(0);
+            if((jsonContext.read("$.order_sources_name")).equals("Tiktok")){
+                JsonArray itemsArray = jsonObject.getAsJsonArray("items");
+                Float totalDiscountTiktok= (float) 0;
+                for (JsonElement element : itemsArray) {
+                    JsonObject item = element.getAsJsonObject();
+                    int discountTiktok = item.get("discount_each_product").getAsInt();
+                    totalDiscountTiktok += discountTiktok;
+                }
+                Integer discountOrder = jsonContext.read("$.total_discount");
+                discount = discountOrder+ totalDiscountTiktok;
+            }else{
+                discount = jsonContext.read("$.total_discount");
+            }
+            Integer surcharge = jsonContext.read("$.surcharge");
+            Integer fee_marketplace = jsonContext.read("$.fee_marketplace");
+            Float totalMoney = productMoney+shipping_fee+surcharge-discount-fee_marketplace;
             Integer totalAmount = jsonContext.read("$.cod");
 
             Order o = new Order();
@@ -393,9 +408,17 @@ public class OrderService implements IOrderService {
             //xử lý order type
             o.setOrderType(orderTypeRepository.findById(1).orElse(null));// kiểu đơn
             //Xử lý business
-            BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
-            Business business = new Business(businessDTO);
-            o.setBusiness(business); // business
+            if((jsonContext.read("$.order_sources_name")).equals("Tiktok")){
+                BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.order_sources"));
+                Business business = new Business(businessDTO);
+                o.setBusiness(business); // business
+            }else{
+                BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
+                Business business = new Business(businessDTO);
+                o.setBusiness(business); // business
+            }
+
+
             //xử lý delivery
             o.setDelivery(deliveryRepository.findById(6).orElse(null));//đơn vị vận chuyển
             //xử lý người bán hàng
@@ -407,6 +430,7 @@ public class OrderService implements IOrderService {
             o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
             o.setAddress(jsonContext.read("$.shipping_address.full_address"));
             o.setBillCode(jsonContext.read("$.id"));
+
             o.setDiscount(Double.valueOf(discount));
             o.setProductMoney(Double.valueOf(productMoney));
             o.setPaid(Double.valueOf(paid));
@@ -419,6 +443,8 @@ public class OrderService implements IOrderService {
             o.setDistrict(jsonContext.read("$.shipping_address.district_name"));
             o.setWard(jsonContext.read("$.shipping_address.commnue_name"));
             o.setValue(orderPosCake);
+            o.setSurcharge(Double.valueOf(surcharge));
+            o.setFeeMarketplace(fee_marketplace.doubleValue());
             o.setCustomer(customer);
             orderRepository.save(o);
             createProductDetailByPosCake(orderPosCake, o);
@@ -447,8 +473,22 @@ public class OrderService implements IOrderService {
             Integer shipping_fee = jsonContext.read("$.shipping_fee");
             Integer productMoney = jsonContext.read("$.total_price");
             Integer paid = jsonContext.read("$.transfer_money");
-            Integer discount = jsonContext.read("$.total_discount");
-            Integer totalMoney = productMoney + shipping_fee - discount;
+            Float discount = Float.valueOf(0);
+            if((jsonContext.read("$.order_sources_name")).equals("Tiktok")){
+                JsonArray itemsArray = jsonObject.getAsJsonArray("items");
+                Float totalDiscountTiktok= (float) 0;
+                for (JsonElement element : itemsArray) {
+                    JsonObject item = element.getAsJsonObject();
+                    int discountTiktok = item.get("discount_each_product").getAsInt();
+                    totalDiscountTiktok += discountTiktok;
+                }
+                Integer discountOrder = jsonContext.read("$.total_discount");
+                discount = discountOrder+ totalDiscountTiktok;
+            }else{
+                discount = jsonContext.read("$.total_discount");
+            }
+
+            Double totalMoney = Double.valueOf(productMoney + shipping_fee - discount);
             Integer totalAmount = jsonContext.read("$.cod");
             Order o = new Order(orderDTO);
             //xử lý order status + delivery
@@ -500,7 +540,7 @@ public class OrderService implements IOrderService {
             o.setProductMoney(Double.valueOf(productMoney));
             o.setPaid(Double.valueOf(paid));
             o.setShippingPrice(Double.valueOf(shipping_fee));
-            o.setTotalMoney(Double.valueOf(totalMoney));
+            o.setTotalMoney(totalMoney);
             o.setPaymentAmount(Double.valueOf(totalAmount));
             o.setInternalNotes(jsonContext.read("$.note"));
             o.setShippingNotes(jsonContext.read("$.note_print"));
@@ -538,6 +578,7 @@ public class OrderService implements IOrderService {
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
                 String displayId = variationInfoObject.get("display_id").getAsString();
                 Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
+                Integer discount = itemObject.get("discount_each_product").getAsInt();
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
                 ProductDetail pd = new ProductDetail(dto);
                 if(pd!=null){
@@ -546,7 +587,7 @@ public class OrderService implements IOrderService {
                     orderDetail.setOrders(o);
                     orderDetail.setQuantity(quantity);
                     orderDetail.setPrice(Float.valueOf(retailPrice));
-                    orderDetail.setDiscount(Float.valueOf(0));
+                    orderDetail.setDiscount((float) discount);
                     orderDetailService.save(orderDetail);
                 }
             }
@@ -567,6 +608,7 @@ public class OrderService implements IOrderService {
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
                 String displayId = variationInfoObject.get("display_id").getAsString();
                 Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
+                Float discount = itemObject.get("discount_each_product").getAsFloat();
                 ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
 
                 ProductDetail pd = new ProductDetail(dto);
@@ -575,7 +617,7 @@ public class OrderService implements IOrderService {
                     orderDetail.setOrders(o);
                     orderDetail.setQuantity(quantity);
                     orderDetail.setPrice(Float.valueOf(retailPrice));
-                    orderDetail.setDiscount(Float.valueOf(0));
+                    orderDetail.setDiscount(discount);
                     orderDetailService.save(orderDetail);
 
             }
@@ -625,12 +667,9 @@ public class OrderService implements IOrderService {
             if(orderDTO!=null){
                 Integer orderStatusId = handleChangeOrderStatusGhn(jsonContext.read("$.Status"));
                 String CODTransferDate = jsonContext.read("$.CODTransferDate");
-                System.out.println(CODTransferDate);
                 if(orderStatusId==17 && CODTransferDate!=null){
                     updateStatus(orderDTO.getId(), 6);
-                    System.out.println((String) jsonContext.read("$.Status"));//khi đối soát thì sử dụng lệnh này
                 }else {
-                    System.out.println((String) jsonContext.read("$.Status"));
                     updateStatus(orderDTO.getId(), orderStatusId); //cập nhật trạng thái
                 }
             }

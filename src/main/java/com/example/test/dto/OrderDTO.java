@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,10 @@ public class OrderDTO {
     private String ward;
     private Date createdAt;
     private Date updatedAt;
+
+    private Double surcharge;
+
+    private Double feeMarketplace;
     private OrderStatusDTO orderStatusDTO;
     private  BusinessDTO businessDTO;
     private  DeliveryDTO deliveryDTO;
@@ -43,6 +48,8 @@ public class OrderDTO {
     private List<OrderDetailDTO> orderDetail;
     private List<OrderTagDTO> orderTag;
     private OrderDeliveryDTO orderDeliveryDTO;
+
+
     public OrderDTO(Order o) {
         this.id = o.getId();
         this.totalMoney = o.getTotalMoney();
@@ -64,6 +71,8 @@ public class OrderDTO {
         this.ward = o.getWard();
         this.createdAt = o.getCreatedAt();
         this.updatedAt = o.getUpdatedAt();
+        this.surcharge =o.getSurcharge();
+        this.feeMarketplace=o.getFeeMarketplace();
 
         // lấy ra statusOrder
         OrderStatus orderStatus = o.getOrderStatus();

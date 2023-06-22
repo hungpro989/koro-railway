@@ -28,13 +28,11 @@ public class WebHookController {
     public void getposcake(@RequestBody String string) throws JsonProcessingException, ParseException {
         orderService.createOrderByPosCake(string);
         messagingTemplate.convertAndSend("/topic/orders", "create");
-        log.info(string);
     }
 
     @PostMapping("/ghn")
     public void ghn(@RequestBody String string) throws JsonProcessingException, ParseException {
         orderService.updateProductByWebHookGhn(string);
         messagingTemplate.convertAndSend("/topic/orders", "create");
-        log.info(string);
     }
 }

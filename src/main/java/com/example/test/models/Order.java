@@ -67,8 +67,15 @@ public class Order {
     private String district;
     @Column(name = "ward")
     private String ward;
+
     @Column(name = "value")
     private String value;
+
+    @Column(name = "surcharge")
+    private Double surcharge;
+
+    @Column(name = "fee_marketplace")
+    private Double feeMarketplace;
     @CreationTimestamp
     @Column(name = "order_time", updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
@@ -150,6 +157,8 @@ public class Order {
         this.ward = dto.getWard();
         this.createdAt = dto.getCreatedAt();
         this.updatedAt = dto.getUpdatedAt();
+        this.surcharge=dto.getSurcharge();
+        this.feeMarketplace= dto.getFeeMarketplace();
     }
 
     public Order(OrderCreateDTO orderCreateDTO) {
@@ -170,6 +179,7 @@ public class Order {
         this.province = orderCreateDTO.getProvince();
         this.district = orderCreateDTO.getDistrict();
         this.ward = orderCreateDTO.getWard();
+
     }
 
 }
