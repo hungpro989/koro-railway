@@ -31,6 +31,8 @@ import static com.example.test.common.common.generateString;
 @Slf4j
 public class OrderService implements IOrderService {
     @Autowired
+    private TestGhnService testGhnService;
+    @Autowired
     OrderDeliveryRepository orderDeliveryRepository;
     @Autowired
     UserService userService;
@@ -487,8 +489,9 @@ public class OrderService implements IOrderService {
             }else{
                 discount = jsonContext.read("$.total_discount");
             }
-
-            Double totalMoney = Double.valueOf(productMoney + shipping_fee - discount);
+            Integer surcharge = jsonContext.read("$.surcharge");
+            Integer fee_marketplace = jsonContext.read("$.fee_marketplace");
+            Float totalMoney = productMoney+shipping_fee+surcharge-discount-fee_marketplace;
             Integer totalAmount = jsonContext.read("$.cod");
             Order o = new Order(orderDTO);
             //xử lý order status + delivery
@@ -540,7 +543,7 @@ public class OrderService implements IOrderService {
             o.setProductMoney(Double.valueOf(productMoney));
             o.setPaid(Double.valueOf(paid));
             o.setShippingPrice(Double.valueOf(shipping_fee));
-            o.setTotalMoney(totalMoney);
+            o.setTotalMoney(Double.valueOf(totalMoney));
             o.setPaymentAmount(Double.valueOf(totalAmount));
             o.setInternalNotes(jsonContext.read("$.note"));
             o.setShippingNotes(jsonContext.read("$.note_print"));
@@ -660,8 +663,9 @@ public class OrderService implements IOrderService {
         return orderStatusId;
     }
     @Override
-    public void updateProductByWebHookGhn(String string){
+    public void updateOrderByWebHookGhn(String string){
         DocumentContext jsonContext = JsonPath.parse(string);
+        testGhnService.save(string);
         if(jsonContext.read("$.Type").equals("switch_status")){
             OrderDTO orderDTO = getOrderByBillCode(jsonContext.read("$.ClientOrderCode"));//check billCode đã tồn tại hay chưa và loại webhook
             if(orderDTO!=null){

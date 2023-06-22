@@ -24,5 +24,5 @@ public interface IOrderService {
     List<OrderDTO> findOrderByPhoneOrBillCode(String phone, String billCode);
     boolean updateOrderStatusAndReFundProductDetail(Integer id);
     boolean scanTrackingOrderAndChangeQuantityHold(String billCode);
-    void updateProductByWebHookGhn(String string);
+    void updateOrderByWebHookGhn(String string);
 }
