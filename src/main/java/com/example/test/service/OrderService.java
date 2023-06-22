@@ -211,6 +211,8 @@ public class OrderService implements IOrderService {
             o.setOrderTime(new Date());
             o.setCustomer(customer);
         }
+        o.setSurcharge(orderDTO.getSurcharge());
+        o.setFeeMarketplace(orderDTO.getFeeMarketplace());
         orderRepository.save(o);
         createOrderTag(orderDTO, o);
         createProductDetail(orderDTO, o);
@@ -223,6 +225,7 @@ public class OrderService implements IOrderService {
             if (productDetail != null) {
                 OrderDetail orderDetail = new OrderDetail(var);
                 orderDetail.setOrders(o);
+                orderDetail.setDiscount(orderDetail.getDiscount());
                 orderDetail.setProductDetail(productDetail);
                 orderDetail.setCreatedAt(new Timestamp(System.currentTimeMillis()));
                 orderDetailService.save(orderDetail);
@@ -343,8 +346,8 @@ public class OrderService implements IOrderService {
             return false;
         }
     }
-
     public void createOrderByPosCake(String orderPosCake) throws JsonProcessingException, ParseException {
+        testGhnService.save(orderPosCake);
         //gson
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);
@@ -552,7 +555,8 @@ public class OrderService implements IOrderService {
             o.setWard(jsonContext.read("$.shipping_address.commnue_name"));
             o.setValue(orderPosCake);
             o.setCustomer(customer);
-
+            o.setSurcharge(Double.valueOf(surcharge));
+            o.setFeeMarketplace(fee_marketplace.doubleValue());
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
             if (partner.isJsonObject() && !partner.isJsonNull()) {
@@ -596,7 +600,6 @@ public class OrderService implements IOrderService {
             }
         }
     }
-
     public void updateProductDetailByPosCake(String orderPosCake, Order o){
         Gson gson = new Gson();
         JsonElement jsonElement = gson.fromJson(orderPosCake, JsonElement.class);

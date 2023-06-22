@@ -179,7 +179,8 @@ public class Order {
         this.province = orderCreateDTO.getProvince();
         this.district = orderCreateDTO.getDistrict();
         this.ward = orderCreateDTO.getWard();
-
+        this.surcharge = orderCreateDTO.getSurcharge();
+        this.feeMarketplace=orderCreateDTO.getFeeMarketplace();
     }
 
 }

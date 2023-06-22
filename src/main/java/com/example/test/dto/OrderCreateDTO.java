@@ -39,6 +39,9 @@ public class OrderCreateDTO {
     private String province;
     private String district;
     private String ward;
+    private Double surcharge;
+    private Double feeMarketplace;
+
     private List<OrderDetailDTO> orderDetailDTO;
     private List<OrderTagCreateDTO> orderTag;
 }
