@@ -536,9 +536,15 @@ public class OrderService implements IOrderService {
             OrderType orderType = new OrderType(orderTypeService.getById(1));
             o.setOrderType(orderType);// kiểu đơn
             //Xử lý business
-            BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
-            Business business = new Business(businessDTO);
-            o.setBusiness(business); // business
+            if((jsonContext.read("$.order_sources_name")).equals("Tiktok")){
+                BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.order_sources"));
+                Business business = new Business(businessDTO);
+                o.setBusiness(business); // business
+            }else{
+                BusinessDTO businessDTO = businessService.findBusinessByPageId(jsonContext.read("$.page_id"));
+                Business business = new Business(businessDTO);
+                o.setBusiness(business); // business
+            }
             o.setName(jsonContext.read("$.shipping_address.full_name"));
             o.setPhone(jsonContext.read("$.shipping_address.phone_number"));
             o.setAddress(jsonContext.read("$.shipping_address.address"));
@@ -557,6 +563,12 @@ public class OrderService implements IOrderService {
             o.setCustomer(customer);
             o.setSurcharge(Double.valueOf(surcharge));
             o.setFeeMarketplace(fee_marketplace.doubleValue());
+            if (o.getShippingTime()!=null){
+                o.setShippingTime(orderDTO.getShippingTime());
+            }else{
+                o.setShippingTime(new Date());
+            }
+
             orderRepository.save(o);
             updateProductDetailByPosCake(orderPosCake, o);
             if (partner.isJsonObject() && !partner.isJsonNull()) {
