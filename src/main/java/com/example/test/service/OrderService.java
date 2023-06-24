@@ -23,6 +23,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.test.common.common.generateString;
 
@@ -308,6 +309,9 @@ public class OrderService implements IOrderService {
         }
         return null;
     }
+    public  OrderDelivery getOrderByCodeDelivery(String CodeDelivery){
+        return orderDeliveryRepository.findOrderDeliveryByCodeDelivery(CodeDelivery);
+    }
     @Override
     public List<OrderDTO> findOrderByPhoneOrBillCode(String phone, String billCode ) {
         List<OrderDTO> listDto = new ArrayList<>();
@@ -335,11 +339,19 @@ public class OrderService implements IOrderService {
     @Override
     public boolean scanTrackingOrderAndChangeQuantityHold(String billCode) {
         try{
-            OrderDTO dto = getOrderByBillCode(billCode);
+            OrderDTO dto = new OrderDTO();
+            //lấy ra đơn có billCode tương ứng
+            dto = getOrderByBillCode(billCode);
+            //nếu không thể tìm thấy bằng billCode thì tim bằng deliveryCode
+            if (dto == null) {
+                dto = getById(getOrderByCodeDelivery(billCode).getOrder().getId());
+            }
+            //thay đổi số lượng quantityHold
             dto.getOrderDetail().forEach(var->{
                 ProductDetail pd = productDetailRepository.findById(var.getProDeId()).orElse(null);
                 productService.handleWhenPrintBillOrder(var.getQuantity(), pd);
             });
+            //cập nhật trạng thái đơn hàng
             updateStatus(dto.getId(), 4);
             return true;
         }catch (Exception e) {
