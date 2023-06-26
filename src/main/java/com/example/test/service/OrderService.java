@@ -607,19 +607,21 @@ public class OrderService implements IOrderService {
                 JsonObject itemObject = itemElement.getAsJsonObject();
                 Integer quantity = itemObject.get("quantity").getAsInt();
                 JsonObject variationInfoObject = itemObject.getAsJsonObject("variation_info");
-                String displayId = variationInfoObject.get("display_id").getAsString();
-                Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
-                Integer discount = itemObject.get("discount_each_product").getAsInt();
-                ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
-                ProductDetail pd = new ProductDetail(dto);
-                if(pd!=null){
-                    OrderDetail orderDetail = new OrderDetail();
-                    orderDetail.setProductDetail(pd);
-                    orderDetail.setOrders(o);
-                    orderDetail.setQuantity(quantity);
-                    orderDetail.setPrice(Float.valueOf(retailPrice));
-                    orderDetail.setDiscount((float) discount);
-                    orderDetailService.save(orderDetail);
+                if(variationInfoObject.get("display_id")==null){
+                    String  displayId = variationInfoObject.get("display_id").getAsString();
+                    Integer retailPrice = variationInfoObject.get("retail_price").getAsInt();
+                    Integer discount = itemObject.get("discount_each_product").getAsInt();
+                    ProductDetailDTO dto = productDetailService.findProductDetailByCodeName(displayId);
+                    ProductDetail pd = new ProductDetail(dto);
+                    if(pd!=null){
+                        OrderDetail orderDetail = new OrderDetail();
+                        orderDetail.setProductDetail(pd);
+                        orderDetail.setOrders(o);
+                        orderDetail.setQuantity(quantity);
+                        orderDetail.setPrice(Float.valueOf(retailPrice));
+                        orderDetail.setDiscount((float) discount);
+                        orderDetailService.save(orderDetail);
+                    }
                 }
             }
         }
