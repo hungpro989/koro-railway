@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -38,5 +39,20 @@ public class SettingController {
             return ResponseEntity.ok().body(new ResponseObject("success", "Update setting by key thanh cong", check));
         }
         return ResponseEntity.badRequest().body(new ResponseObject("error", "Update setting by key that bai", settingDTO));
+    }
+    @PutMapping
+    public ResponseEntity<ResponseObject> updateSetting(@RequestBody ArrayList<SettingDTO> settingDTO){
+        System.out.println(settingDTO);
+        int count =0;
+        for (SettingDTO settingVO: settingDTO) {
+            Boolean check = settingService.updateSetting(settingVO, settingVO.getMyKey());
+            if(check){
+                count += 1;
+            }
+        }
+        if(settingDTO.size() == count){
+            return ResponseEntity.ok().body(new ResponseObject("success", "Update setting all thanh cong", count));
+        }
+        return ResponseEntity.badRequest().body(new ResponseObject("error", "Update setting all that bai", settingDTO));
     }
 }
