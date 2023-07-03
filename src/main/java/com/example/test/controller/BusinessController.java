@@ -2,9 +2,9 @@ package com.example.test.controller;
 
 import com.example.test.dto.BusinessDTO;
 import com.example.test.dto.ResponseObject;
-import com.example.test.models.Business;
+import com.example.test.entity.Business;
 import com.example.test.repository.BusinessRepository;
-import com.example.test.service.BusinessService;
+import com.example.test.serviceImpl.BusinessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,7 +1,7 @@
 package com.example.test.dto;
 
-import com.example.test.models.ProductDetail;
-import com.example.test.models.StockDetail;
+import com.example.test.entity.ProductDetail;
+import com.example.test.entity.StockDetail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

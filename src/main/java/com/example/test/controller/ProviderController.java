@@ -2,8 +2,8 @@ package com.example.test.controller;
 
 import com.example.test.dto.ProvidersDTO;
 import com.example.test.dto.ResponseObject;
-import com.example.test.models.ProvidersNCC;
-import com.example.test.service.ProviderNCCService;
+import com.example.test.entity.ProvidersNCC;
+import com.example.test.serviceImpl.ProviderNCCService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

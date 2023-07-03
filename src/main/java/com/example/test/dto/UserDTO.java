@@ -1,12 +1,10 @@
 package com.example.test.dto;
 
-import com.example.test.models.Theme;
-import com.example.test.models.User;
+import com.example.test.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Date;
 
 @Data

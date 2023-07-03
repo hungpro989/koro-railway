@@ -1,6 +1,6 @@
 package com.example.test.repository;
 
-import com.example.test.models.Setting;
+import com.example.test.entity.Setting;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

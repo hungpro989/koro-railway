@@ -1,6 +1,6 @@
 package com.example.test.dto;
 
-import com.example.test.models.OrderStatus;
+import com.example.test.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

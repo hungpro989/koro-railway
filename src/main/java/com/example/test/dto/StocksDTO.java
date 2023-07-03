@@ -1,5 +1,5 @@
 package com.example.test.dto;
-import com.example.test.models.*;
+import com.example.test.entity.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

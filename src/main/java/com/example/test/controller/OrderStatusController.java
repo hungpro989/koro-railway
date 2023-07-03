@@ -2,8 +2,8 @@ package com.example.test.controller;
 
 import com.example.test.dto.OrderStatusDTO;
 import com.example.test.dto.ResponseObject;
-import com.example.test.models.OrderStatus;
-import com.example.test.service.OrderStatusService;
+import com.example.test.entity.OrderStatus;
+import com.example.test.serviceImpl.OrderStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

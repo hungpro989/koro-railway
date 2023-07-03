@@ -1,6 +1,6 @@
 package com.example.test.dto;
 
-import com.example.test.models.Setting;
+import com.example.test.entity.Setting;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

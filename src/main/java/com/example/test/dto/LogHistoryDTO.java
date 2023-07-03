@@ -1,6 +1,6 @@
 package com.example.test.dto;
 
-import com.example.test.models.LogHistory;
+import com.example.test.entity.LogHistory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

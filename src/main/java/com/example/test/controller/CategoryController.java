@@ -2,8 +2,8 @@ package com.example.test.controller;
 
 import com.example.test.dto.CategoryDTOAdmin;
 import com.example.test.dto.ResponseObject;
-import com.example.test.models.Category;
-import com.example.test.service.CategoryService;
+import com.example.test.entity.Category;
+import com.example.test.serviceImpl.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

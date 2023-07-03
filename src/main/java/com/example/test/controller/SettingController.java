@@ -2,7 +2,7 @@ package com.example.test.controller;
 
 import com.example.test.dto.ResponseObject;
 import com.example.test.dto.SettingDTO;
-import com.example.test.service.SettingService;
+import com.example.test.serviceImpl.SettingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

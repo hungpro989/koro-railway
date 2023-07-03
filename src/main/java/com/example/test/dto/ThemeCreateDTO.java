@@ -1,11 +1,9 @@
 package com.example.test.dto;
 
-import com.example.test.models.Theme;
+import com.example.test.entity.Theme;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.Column;
 
 @Data
 @AllArgsConstructor

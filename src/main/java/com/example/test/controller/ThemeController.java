@@ -1,9 +1,8 @@
 package com.example.test.controller;
 
 import com.example.test.dto.*;
-import com.example.test.models.ProvidersNCC;
-import com.example.test.models.Theme;
-import com.example.test.service.ThemeService;
+import com.example.test.entity.Theme;
+import com.example.test.serviceImpl.ThemeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

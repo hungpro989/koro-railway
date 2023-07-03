@@ -1,7 +1,7 @@
 package com.example.test.dto;
 
-import com.example.test.models.OrderTag;
-import com.example.test.models.Tag;
+import com.example.test.entity.OrderTag;
+import com.example.test.entity.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

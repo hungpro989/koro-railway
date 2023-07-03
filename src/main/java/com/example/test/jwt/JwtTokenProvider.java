@@ -1,6 +1,6 @@
 package com.example.test.jwt;
 
-import com.example.test.service.CustomUserDetails;
+import com.example.test.serviceImpl.CustomUserDetails;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

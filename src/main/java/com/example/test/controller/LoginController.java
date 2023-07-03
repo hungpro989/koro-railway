@@ -5,10 +5,10 @@ import com.example.test.config.LoginResponse;
 import com.example.test.config.RandomStuff;
 import com.example.test.dto.ResponseObject;
 import com.example.test.jwt.JwtTokenProvider;
-import com.example.test.models.LogHistory;
+import com.example.test.entity.LogHistory;
 import com.example.test.repository.LogHistoryRepository;
-import com.example.test.service.CustomUserDetails;
-import com.example.test.service.LogHistoryService;
+import com.example.test.serviceImpl.CustomUserDetails;
+import com.example.test.serviceImpl.LogHistoryService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +73,6 @@ public class LoginController {
         if (header == null || !header.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         // Lấy chuỗi token từ header Authorization
         String token = header.substring(7);
 

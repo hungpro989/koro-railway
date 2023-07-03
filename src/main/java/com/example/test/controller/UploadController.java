@@ -2,7 +2,7 @@ package com.example.test.controller;
 
 import com.example.test.dto.ImageDTO;
 import com.example.test.dto.ResponseObject;
-import com.example.test.service.ImageService;
+import com.example.test.serviceImpl.ImageService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;

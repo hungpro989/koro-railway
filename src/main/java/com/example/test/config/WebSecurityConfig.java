@@ -1,7 +1,7 @@
 package com.example.test.config;
 
 import com.example.test.jwt.JwtAuthenticationFilter;
-import com.example.test.service.UserService;
+import com.example.test.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;

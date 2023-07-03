@@ -1,7 +1,7 @@
 package com.example.test.dto;
 
-import com.example.test.models.Category;
-import com.example.test.models.CategoryProduct;
+import com.example.test.entity.Category;
+import com.example.test.entity.CategoryProduct;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

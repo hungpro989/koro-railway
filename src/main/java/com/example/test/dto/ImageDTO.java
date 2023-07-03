@@ -1,6 +1,6 @@
 package com.example.test.dto;
 
-import com.example.test.models.Image;
+import com.example.test.entity.Image;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

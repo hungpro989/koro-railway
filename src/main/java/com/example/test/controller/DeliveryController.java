@@ -2,8 +2,8 @@ package com.example.test.controller;
 
 import com.example.test.dto.DeliveryDTO;
 import com.example.test.dto.ResponseObject;
-import com.example.test.models.Delivery;
-import com.example.test.service.DeliveryService;
+import com.example.test.entity.Delivery;
+import com.example.test.serviceImpl.DeliveryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

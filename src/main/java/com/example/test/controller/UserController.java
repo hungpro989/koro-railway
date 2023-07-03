@@ -1,14 +1,12 @@
 package com.example.test.controller;
 
 import com.example.test.dto.*;
-import com.example.test.models.User;
+import com.example.test.entity.User;
 import com.example.test.repository.UserRepository;
-import com.example.test.service.UserService;
+import com.example.test.serviceImpl.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

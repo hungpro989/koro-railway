@@ -2,7 +2,7 @@ package com.example.test.controller;
 
 import com.example.test.dto.ResponseObject;
 import com.example.test.dto.TagDTO;
-import com.example.test.service.TagService;
+import com.example.test.serviceImpl.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

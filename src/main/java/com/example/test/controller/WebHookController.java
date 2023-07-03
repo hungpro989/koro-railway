@@ -1,7 +1,7 @@
 package com.example.test.controller;
 
-import com.example.test.service.OrderService;
-import com.example.test.service.TestGhnService;
+import com.example.test.serviceImpl.OrderService;
+import com.example.test.serviceImpl.TestGhnService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
