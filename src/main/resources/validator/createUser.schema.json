@@ -1,0 +1,85 @@
+{
+  "$id": "https://example.com/createPayment.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Validate create user request",
+  "description": "Create New User",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "email": {
+      "type": "string",
+      "description": "Email address",
+      "format": "email"
+    },
+    "password": {
+      "type": "string",
+      "minLength": 8,
+      "errorMessage": "Password bao gồm chữ cái viết hoa, viết thường, chữ số, ký tự đặc biệt"
+    },
+    "username": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]+$",
+      "minLength": 4
+    },
+
+    "listRole": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "SALE",
+          "MARKETING",
+          "OPERATOR",
+          "USER"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "role of user"
+    },
+    "fullName": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "address": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 10,
+      "pattern": "^[0-9]+$"
+    },
+    "description": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "birthday": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "status": {
+      "type": "boolean"
+    },
+    "sex": {
+      "type": "boolean"
+    },
+    "bankName": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "bankAccount": {
+      "type": "string",
+      "maxLength": 50
+    },
+    "cccd": {
+      "type": "string",
+      "maxLength": 15
+    },
+    "image":{
+      "type": ["string","null"]
+    }
+  },
+  "required": ["email","password","username","fullName","address"]
+}

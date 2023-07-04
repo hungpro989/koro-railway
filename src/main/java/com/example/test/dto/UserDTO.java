@@ -4,12 +4,15 @@ import com.example.test.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class UserDTO {
     private Integer id;
     private String username;
@@ -30,6 +33,7 @@ public class UserDTO {
     private Integer themeId;
     private Date createdAt;
     private Date updatedAt;
+    private Set<String> listRole;
 
     public UserDTO(User b){
         this.id=b.getId();

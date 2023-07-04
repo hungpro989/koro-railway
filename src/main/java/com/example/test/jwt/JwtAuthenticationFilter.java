@@ -25,27 +25,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private UserService customUserDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         try {
+            // lấy jwt từ request
             String jwt = getJwtFromRequest(request);
-
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+                // lay  userId tu chuoi jwt
                 Long userId = tokenProvider.getUserIdFromJWT(jwt);
-
+                // lay thong tin nguoi dung tu userId
                 UserDetails userDetails = customUserDetailsService.loadUserById(userId);
                 if(userDetails != null) {
-                    UsernamePasswordAuthenticationToken
-                            authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                            userDetails
-                                    .getAuthorities());
+                    //Neu nguoi dung hop le set thong tin cho security context
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
         } catch (Exception ex) {
-            log.error("failed on set user authentication", ex);
+            log.error("Failed on set user authentication", ex);
         }
 
         filterChain.doFilter(request, response);
@@ -55,6 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String bearerToken = request.getHeader("Authorization");
         // Kiểm tra xem header Authorization có chứa thông tin jwt không
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            //nếu có thì cắt lấy chuỗi sau ký tự thứ 7
             return bearerToken.substring(7);
         }
         return null;

@@ -5,6 +5,7 @@ import com.example.test.dto.UserOrderDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
@@ -21,6 +22,7 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

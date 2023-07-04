@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     User findEmployeeByPhone(String phone);
-    User findEmployeeByEmail(String email);
+    User findByEmail(String email);
     @Query("select e from User e where e.id <> :id and e.phone= :phone or e.email= :email")
     List<User> getEmployeeWhereNotId(Integer id, String email, String phone);
 

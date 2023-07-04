@@ -1,30 +1,35 @@
 package com.example.test.controller;
 
-import com.example.test.config.LoginRequest;
-import com.example.test.config.LoginResponse;
-import com.example.test.config.RandomStuff;
+import com.example.test.config.*;
 import com.example.test.dto.ResponseObject;
+import com.example.test.dto.UserDTO;
+import com.example.test.dto.UserOrderDTO;
 import com.example.test.jwt.JwtTokenProvider;
 import com.example.test.entity.LogHistory;
 import com.example.test.repository.LogHistoryRepository;
-import com.example.test.serviceImpl.CustomUserDetails;
 import com.example.test.serviceImpl.LogHistoryService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.example.test.serviceImpl.UserService;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
+import utils.CommonFunction;
+import utils.Constant;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.InputStream;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping
@@ -32,17 +37,20 @@ import java.util.Date;
 public class LoginController {
     @Autowired
     AuthenticationManager authenticationManager;
-
+@Autowired
+private CustomUserDetailsService customUserDetailsService;
     @Autowired
     private JwtTokenProvider tokenProvider;
     @Autowired
     LogHistoryService logHistoryService;
     @Autowired
     private LogHistoryRepository logHistoryRepository;
-    Logger logger = LogManager.getLogger(LoginController.class);
+    @Autowired
+            private UserService userService;
+    Gson gson = new Gson();
     @PostMapping("/login")
-    public LoginResponse authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
-
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        try {
             // Xác thực thông tin người dùng Request lên
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -53,9 +61,14 @@ public class LoginController {
             // Nếu không xảy ra exception tức là thông tin hợp lệ
             // Set thông tin authentication vào Security Context
             SecurityContextHolder.getContext().setAuthentication(authentication);
-
+            //lấy ra đối tượng CustomerUserDetails
+            CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
             // Trả về jwt cho người dùng.
-            String jwt = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+            String jwt = tokenProvider.generateToken(customUserDetails);
+            // Lấy  các quyền của user
+            List<String> listRoles =  customUserDetails.getAuthorities().stream()
+                    .map(item->item.getAuthority())
+                    .collect(Collectors.toList());
             //ghi lại lịch sử đăng nhập
             LogHistory logHistory = new LogHistory();
             logHistory.setLevel("INFO");
@@ -63,7 +76,16 @@ public class LoginController {
             logHistory.setTimestamp(new Date());
             logHistory.setMessage("LOGIN");
             logHistoryRepository.save(logHistory);
-            return new LoginResponse(jwt);
+            return ResponseEntity.ok().body(new ResponseObject("SUCCESS","Login successfully",
+                    new LoginResponse(jwt,
+                            customUserDetails.getUsername(),
+                            customUserDetails.getEmail(),
+                            customUserDetails.getStatus(),
+                            listRoles)));
+        } catch (AuthenticationException e) {
+            // Xử lý khi sai tài khoản hoặc mật khẩu
+            return ResponseEntity.ok().body(new ResponseObject("ERROR","Error username or password",null));
+        }
     }
     //kiểm tra access token có hợp lệ, còn hạn sử dụng hay không
     @GetMapping("/auth/check-token")
@@ -79,7 +101,7 @@ public class LoginController {
         if(tokenProvider.validateToken(token)){
             return ResponseEntity.ok().body(new ResponseObject("success", "Access token successfully", token));
         }else{
-            return ResponseEntity.status(400).body(new ResponseObject("error", "Access token field", null));
+            return ResponseEntity.badRequest().body(new ResponseObject("error", "Access token field", null));
         }
     }
 
@@ -97,4 +119,26 @@ public class LoginController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
     }
+    @PostMapping("/register")
+    public ResponseEntity<?>registerUser(@RequestBody String registerRequestString){
+        //validate chuỗi string đầu vào registerRequestString với file validator/createUser.schema.json
+        InputStream inputStream = UserController.class.getClassLoader().getResourceAsStream(Constant.JSON_REQ_CREATE_USER);
+        CommonFunction.jsonValidate(inputStream,registerRequestString);
+        //convert dữ liệu từ string thành RegisterRequest
+        UserDTO registerRequest = gson.fromJson(registerRequestString,UserDTO.class);
+        if(userService.checkExistUsername(registerRequest.getUsername())){
+            return ResponseEntity.badRequest().body(new ResponseObject("ERROR","Username already exists",null));
+        }
+        if(userService.checkExistEmail(registerRequest.getEmail())){
+            return ResponseEntity.badRequest().body(new ResponseObject("ERROR","Username already exists",null));
+        }
+        UserOrderDTO userOrderDTO= userService.createUser(registerRequest);
+        if(userOrderDTO != null){
+            return new ResponseEntity<>(new ResponseObject("SUCCESS","Registered successfully", userOrderDTO), HttpStatus.CREATED);
+
+        }
+        return new ResponseEntity<>(new ResponseObject("ERROR","Create account of user error",null), HttpStatus.BAD_REQUEST);
+
+    }
+
 }

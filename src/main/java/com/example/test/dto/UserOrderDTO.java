@@ -4,12 +4,14 @@ import com.example.test.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 public class UserOrderDTO {
     private Integer id;
     private String username;

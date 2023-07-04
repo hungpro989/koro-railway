@@ -102,6 +102,12 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.networknt</groupId>
+			<artifactId>json-schema-validator</artifactId>
+			<version>1.0.77</version>
+			<scope>compile</scope>
+		</dependency>
 	</dependencies>
 
 	<build>

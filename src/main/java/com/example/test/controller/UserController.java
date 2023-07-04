@@ -73,13 +73,13 @@ public class UserController {
         if(user != null){
             //kiểm tra allEmployee nhưng phone, email là ko trùng ==> cập nhật luôn
             if(!userService.checkExistPhone(user.getPhone()) && !userService.checkExistEmail(user.getEmail())) {
-                if (userService.save(user)) {
+                if (userService.save(user)!=null) {
                     return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công1", user));
                 }
                 return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại1", null));
                 //kiểm tra empPhone, empEmail trùng với dtoPhone, dtoEmail các trường khác cập nhật => cập nhật luôn
             }else if(user.getPhone().equalsIgnoreCase(user.getPhone()) && user.getEmail().equalsIgnoreCase(user.getEmail())) {
-                if (userService.save(user)) {
+                if (userService.save(user)!=null) {
                     return ResponseEntity.ok().body(new ResponseObject("success", "Cập nhật thông tin thành công2", user));
                 }
                 return ResponseEntity.badRequest().body(new ResponseObject("error", "Cập nhật thông tin thất bại2", null));
